@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/intellistart-java-2022-Propositum.iml" filepath="$PROJECT_DIR$/.idea/intellistart-java-2022-Propositum.iml" />
+      <module fileurl="file://$PROJECT_DIR$/intellistart-java-2022-dreamteam/interview-planning.iml" filepath="$PROJECT_DIR$/intellistart-java-2022-dreamteam/interview-planning.iml" />
+    </modules>
+  </component>
+</project>

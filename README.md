@@ -1,0 +1,1 @@
+# intellistart-java-2022-Propositum

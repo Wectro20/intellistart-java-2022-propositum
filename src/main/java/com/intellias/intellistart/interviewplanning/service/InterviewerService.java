@@ -19,7 +19,18 @@ public class InterviewerService {
   private InterviewerRepository interviewerRepository;
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
 
-  public InterviewerTimeSlot createSlot(Long interviewId, DayOfWeek day, LocalTime start, LocalTime end) {
+  /**
+   * Create time slot for Interviewer.
+   *
+   * @param interviewId id of candidate
+   * @param day        available day for time slot
+   * @param start start time of time slot
+   * @param end end time of time slot
+   *
+   * @return candidate time slot
+   */
+  public InterviewerTimeSlot createSlot(Long interviewId, DayOfWeek day,
+                                        LocalTime start, LocalTime end) {
     return InterviewerTimeSlot.builder()
         .day(day)
         .start(start)

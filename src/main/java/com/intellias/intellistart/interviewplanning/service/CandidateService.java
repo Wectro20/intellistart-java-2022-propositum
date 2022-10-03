@@ -19,7 +19,18 @@ public class CandidateService {
   private CandidateRepository candidateRepository;
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
 
-  public CandidateTimeSlot createSlot(Long candidateId, LocalDate date, LocalTime start, LocalTime end) {
+  /**
+   * Create time slot for Candidate.
+   *
+   * @param candidateId id of candidate
+   * @param date        available date for time slot
+   * @param start start time of time slot
+   * @param end end time of time slot
+   *
+   * @return candidate time slot
+   */
+  public CandidateTimeSlot createSlot(Long candidateId, LocalDate date,
+                                      LocalTime start, LocalTime end) {
     return CandidateTimeSlot.builder()
         .date(date)
         .start(start)

@@ -1,21 +1,33 @@
 package com.intellias.intellistart.interviewplanning.model.slot;
 
+import com.intellias.intellistart.interviewplanning.model.user.Interviewer;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * InterviewerTimeSlot entity for Spring JPA.
+ */
+@Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class InterviewerTimeSlot extends TimeSlot {
-
+@AllArgsConstructor
+@Builder
+public class InterviewerTimeSlot {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private LocalTime start;
+  private LocalTime end;
   private DayOfWeek day;
-
-  public InterviewerTimeSlot(DayOfWeek day, LocalTime start, LocalTime end) {
-    super(start, end);
-    this.day = day;
-  }
+  @ManyToOne
+  private Interviewer interviewer;
 }

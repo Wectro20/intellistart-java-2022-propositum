@@ -18,12 +18,14 @@ public class CandidateServiceTest {
   @Test
   void createCandidateSlotWithParameters() {
     var slot = candidateService.createSlot(
+        15L,
         LocalDate.of(2022, 4, 12),
         LocalTime.of(9, 0), // 09:00
         LocalTime.of(17, 0) // 17:00
     );
 
     assertNotNull(slot);
+    assertEquals(15L, slot.getCandidate().getId());
     assertEquals(LocalDate.of(2022, 4, 12), slot.getDate());
     assertEquals(LocalTime.of(9, 0), slot.getStart());
     assertEquals(LocalTime.of(17, 0), slot.getEnd());

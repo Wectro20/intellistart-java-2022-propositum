@@ -1,4 +1,4 @@
 # intellistart-java-2022-Propositum
 
 ## SQL Diagram
-![diagram](https://github.com/Wectro20/intellistart-java-2022-propositum/blob/AddingSQLDiagram/media/SQL_Diagram.jpg)
+![SQL_Diagram](https://user-images.githubusercontent.com/56608205/194121497-8d8dc2c9-5a2f-4256-a097-8c3e42e82968.jpg)

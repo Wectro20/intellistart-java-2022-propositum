@@ -1,6 +1,6 @@
 package com.intellias.intellistart.interviewplanning.model.slot;
 
-import com.intellias.intellistart.interviewplanning.model.user.Interviewer;
+import com.intellias.intellistart.interviewplanning.model.User;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -29,5 +29,5 @@ public class InterviewerTimeSlot {
   private LocalTime end;
   private DayOfWeek day;
   @ManyToOne
-  private Interviewer interviewer;
+  private User user;
 }

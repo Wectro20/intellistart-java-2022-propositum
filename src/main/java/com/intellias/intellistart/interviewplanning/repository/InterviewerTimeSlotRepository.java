@@ -1,4 +1,4 @@
-package com.intellias.intellistart.interviewplanning.repo;
+package com.intellias.intellistart.interviewplanning.repository;
 
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import org.springframework.data.jpa.repository.JpaRepository;

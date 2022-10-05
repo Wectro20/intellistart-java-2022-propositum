@@ -1,6 +1,6 @@
 package com.intellias.intellistart.interviewplanning.model.slot;
 
-import com.intellias.intellistart.interviewplanning.model.user.Candidate;
+import com.intellias.intellistart.interviewplanning.model.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CandidateTimeSlot {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -29,5 +30,5 @@ public class CandidateTimeSlot {
   private LocalTime end;
   private LocalDate date;
   @ManyToOne
-  private Candidate candidate;
+  private User user;
 }

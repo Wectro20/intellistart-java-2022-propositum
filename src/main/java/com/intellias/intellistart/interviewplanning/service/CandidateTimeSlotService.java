@@ -1,9 +1,9 @@
 package com.intellias.intellistart.interviewplanning.service;
 
+import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
-import com.intellias.intellistart.interviewplanning.model.user.Candidate;
-import com.intellias.intellistart.interviewplanning.repo.CandidateRepository;
-import com.intellias.intellistart.interviewplanning.repo.CandidateTimeSlotRepository;
+import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
+import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @AllArgsConstructor
-public class CandidateService {
+public class CandidateTimeSlotService {
 
-  private CandidateRepository candidateRepository;
+  private UserRepository userRepository;
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
 
   /**
@@ -35,7 +35,7 @@ public class CandidateService {
         .date(date)
         .start(start)
         .end(end)
-        .candidate(Candidate.builder().id(candidateId).build())
+        .user(User.builder().id(candidateId).build())
         .build();
   }
 

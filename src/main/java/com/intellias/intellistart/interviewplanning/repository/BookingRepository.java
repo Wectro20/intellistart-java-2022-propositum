@@ -1,4 +1,4 @@
-package com.intellias.intellistart.interviewplanning.repo;
+package com.intellias.intellistart.interviewplanning.repository;
 
 import com.intellias.intellistart.interviewplanning.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,26 +1,28 @@
-package com.intellias.intellistart.interviewplanning.model.user;
+package com.intellias.intellistart.interviewplanning.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Interviewer entity for Spring JPA.
+ * Booking Limit entity for max number of booking for interviewer.
  */
-@Entity
+@Entity(name = "booking_limit")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Interviewer {
+public class BookingLimit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private String email;
-  private String password;
+  @OneToOne
+  private User user;
+  @Column(name = "max_limit_per_week")
+  private int maxLimitPerWeek;
 }

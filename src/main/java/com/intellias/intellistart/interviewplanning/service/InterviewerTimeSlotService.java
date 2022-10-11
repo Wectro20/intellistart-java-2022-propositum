@@ -2,10 +2,10 @@ package com.intellias.intellistart.interviewplanning.service;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
+import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
@@ -41,7 +41,10 @@ public class InterviewerTimeSlotService {
   /**
    * Create time slot for Interviewer.
    *
-   * @return candidate time slot
+   * @param interviewerEmail for which create slot
+   * @param interviewerTimeSlot time slot which needs to create
+   *
+   * @return saved interviewer time slot
    */
   public InterviewerTimeSlot createSlot(String interviewerEmail,
       InterviewerTimeSlot interviewerTimeSlot) {

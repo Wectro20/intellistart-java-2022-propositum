@@ -28,6 +28,9 @@ public class User {
   @Enumerated(EnumType.STRING)
   private UserRole role;
 
+  /**
+   * User Role enum.
+   */
   public enum UserRole {
     INTERVIEWER,
     COORDINATOR,

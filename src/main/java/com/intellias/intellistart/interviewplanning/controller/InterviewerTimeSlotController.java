@@ -8,12 +8,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Rest Controller for Interviewer time slots.
+ */
 @RestController
 @AllArgsConstructor
 public class InterviewerTimeSlotController {
 
   private InterviewerTimeSlotService interviewerTimeSlotService;
 
+  /**
+   * Endpoint to create time slot for Interviewer.
+   *
+   * @param interviewerEmail for which create slot
+   * @param interviewerTimeSlot request body of time slot
+   *
+   * @return saved interviewer time slot
+   */
   @PostMapping("/interviewers/{interviewerEmail}/slots")
   public InterviewerTimeSlot createSlot(@PathVariable String interviewerEmail,
       @RequestBody InterviewerTimeSlot interviewerTimeSlot) {

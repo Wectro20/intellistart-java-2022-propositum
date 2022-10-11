@@ -24,13 +24,15 @@ public class CandidateTimeSlotService {
    *
    * @param candidateId id of candidate
    * @param date        available date for time slot
-   * @param start       start time of time slot
-   * @param end         end time of time slot
+   * @param from       start time of time slot
+   * @param to         end time of time slot
    * @return candidate time slot
    */
   public CandidateTimeSlot createSlot(Long candidateId, LocalDate date,
-      LocalTime start, LocalTime end) {
+      LocalTime from, LocalTime to) {
     return CandidateTimeSlot.builder()
+        .from(from)
+        .to(to)
         .date(date)
         .user(User.builder().id(candidateId).build())
         .build();

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+/**
+ * Global exception handler for application.
+ */
 @ControllerAdvice
 public class ApplicationExceptionHandler {
 
@@ -20,7 +23,9 @@ public class ApplicationExceptionHandler {
   private static final String INVALID_BOUNDARIES = "invalid_boundaries";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
 
-
+  /**
+   * Handle InterviewerNotFoundException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   @ExceptionHandler(InterviewerNotFoundException.class)
@@ -28,6 +33,9 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(INTERVIEWER_NOT_FOUND, "interviewer was not found");
   }
 
+  /**
+   * Handle SlotIsOverlappingException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.CONFLICT)
   @ExceptionHandler(SlotIsOverlappingException.class)
@@ -35,6 +43,9 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(SLOT_IS_OVERLAPPING, e.getMessage());
   }
 
+  /**
+   * Handle InvalidTimeSlotBoundariesException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidTimeSlotBoundariesException.class)
@@ -43,6 +54,9 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(INVALID_BOUNDARIES, e.getMessage());
   }
 
+  /**
+   * Handle InvalidDayOfWeekException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidDayOfWeekException.class)
@@ -54,6 +68,9 @@ public class ApplicationExceptionHandler {
   }
 
 
+  /**
+   * Used for detailed errors in response.
+   */
   @AllArgsConstructor
   @NoArgsConstructor
   @Data

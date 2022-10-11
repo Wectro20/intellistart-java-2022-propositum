@@ -27,8 +27,8 @@ public class CandidateTimeSlotServiceTest {
     assertNotNull(slot);
     assertEquals(15L, slot.getUser().getId());
     assertEquals(LocalDate.of(2022, 4, 12), slot.getDate());
-    assertEquals(LocalTime.of(9, 0), slot.getStart());
-    assertEquals(LocalTime.of(17, 0), slot.getEnd());
+    assertEquals(LocalTime.of(9, 0), slot.getFrom());
+    assertEquals(LocalTime.of(17, 0), slot.getTo());
   }
 
 }

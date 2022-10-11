@@ -26,8 +26,8 @@ public class CandidateTimeSlot {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private LocalTime start;
-  private LocalTime end;
+  private LocalTime from;
+  private LocalTime to;
   private LocalDate date;
   @ManyToOne
   private User user;

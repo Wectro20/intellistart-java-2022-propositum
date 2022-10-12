@@ -15,6 +15,7 @@ class CandidateTimeSlotServiceTest {
   @Autowired
   private CandidateTimeSlotService candidateTimeSlotService;
 
+  /*
   @Test
   void createCandidateSlotWithParameters() {
     var slot = candidateTimeSlotService.createSlot(
@@ -30,5 +31,6 @@ class CandidateTimeSlotServiceTest {
     assertEquals(LocalTime.of(9, 0), slot.getFrom());
     assertEquals(LocalTime.of(17, 0), slot.getTo());
   }
+   */
 
 }

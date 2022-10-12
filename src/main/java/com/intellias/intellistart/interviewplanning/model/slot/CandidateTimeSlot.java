@@ -1,5 +1,6 @@
 package com.intellias.intellistart.interviewplanning.model.slot;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
@@ -30,8 +31,10 @@ public class CandidateTimeSlot {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @JsonView(Views.Public.class)
   private Long id;
+  @JsonFormat(pattern = "HH:mm")
   @JsonView(Views.Public.class)
   private LocalTime from;
+  @JsonFormat(pattern = "HH:mm")
   @JsonView(Views.Public.class)
   private LocalTime to;
   @JsonView(Views.Public.class)

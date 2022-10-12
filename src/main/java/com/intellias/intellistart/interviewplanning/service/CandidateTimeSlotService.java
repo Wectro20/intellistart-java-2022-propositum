@@ -10,6 +10,7 @@ import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -72,8 +73,7 @@ public class CandidateTimeSlotService {
       throw new InvalidTimeSlotBoundariesException(start + "; " + end);
     }
 
-    if ((double) (end.getHour() * 60 + end.getMinute()) - (start.getHour() * 60 + start.getMinute())
-        < 1.5) {
+    if (Duration.between(start, end).getSeconds() < 5400) {
       throw new InvalidTimeSlotBoundariesException(start + "; " + end);
     }
   }
@@ -93,13 +93,14 @@ public class CandidateTimeSlotService {
     User candidate = optionalCandidate.orElseThrow(
         () -> new UserNotFoundException(candidateEmail));
 
-    Optional<CandidateTimeSlot> overlappingSlot = candidateTimeSlotRepository.findByUserId(candidate.getId())
+    Optional<CandidateTimeSlot> overlappingSlot = candidateTimeSlotRepository.findByUserId(
+            candidate.getId())
         .stream()
         .filter(candidateTimeSlot -> candidateTimeSlot.getDate().equals(date) &&
             candidateTimeSlot.getFrom().equals(start) && candidateTimeSlot.getTo().equals(end))
         .findAny();
 
-    if(overlappingSlot.isPresent()){
+    if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());
     }
 

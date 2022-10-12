@@ -4,14 +4,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.views.Views;
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,17 +26,6 @@ public class CandidateController {
   @Autowired
   public CandidateController(CandidateTimeSlotService candidateService) {
     this.candidateService = candidateService;
-  }
-
-  @GetMapping
-  ResponseEntity<CandidateTimeSlot> create() {
-    CandidateTimeSlot build = CandidateTimeSlot.builder()
-        .from(LocalTime.of(9, 0))
-        .to(LocalTime.of(15, 0))
-        .date(LocalDate.of(2020, 12, 12))
-        .build();
-
-    return new ResponseEntity<>(build, HttpStatus.CREATED);
   }
 
   /**

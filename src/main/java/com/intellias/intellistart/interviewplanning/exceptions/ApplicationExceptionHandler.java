@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Controller for handling exception in application
- * */
+ * Controller for handling exception in application.
+ */
 @ControllerAdvice
 public class ApplicationExceptionHandler {
 
@@ -24,6 +24,9 @@ public class ApplicationExceptionHandler {
   private static final String INVALID_BOUNDARIES = "invalid_boundaries";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
 
+  /**
+   * Exception handler for InterviewerNotFoundException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   @ExceptionHandler(InterviewerNotFoundException.class)
@@ -31,6 +34,9 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(INTERVIEWER_NOT_FOUND, "interviewer was not found");
   }
 
+  /**
+   * Exception handler for UserNotFoundException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   @ExceptionHandler(UserNotFoundException.class)
@@ -38,6 +44,9 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(CANDIDATE_NOT_FOUND, e.getMessage());
   }
 
+  /**
+   * Exception handler for SlotIsOverlappingException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.CONFLICT)
   @ExceptionHandler(SlotIsOverlappingException.class)
@@ -45,6 +54,9 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(SLOT_IS_OVERLAPPING, e.getMessage());
   }
 
+  /**
+   * Exception handler for InvalidTimeSlotBoundariesException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidTimeSlotBoundariesException.class)
@@ -53,16 +65,22 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(INVALID_BOUNDARIES, e.getMessage());
   }
 
+  /**
+   * Exception handler for InvalidDayOfWeekException.
+   */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidDayOfWeekException.class)
   public ErrorResponse handleInvalidDayOfWeekException() {
     String errorMessage = "Possible values: " + Arrays.stream(DayOfWeek.values())
+        .map(DayOfWeek::getValue)
         .collect(Collectors.toList());
     return new ErrorResponse(INVALID_DAY_OF_WEEK, errorMessage);
   }
 
-
+  /**
+   * Response error, if occurs.
+   */
   @AllArgsConstructor
   @NoArgsConstructor
   @Data

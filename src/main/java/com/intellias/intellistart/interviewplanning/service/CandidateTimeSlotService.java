@@ -96,7 +96,8 @@ public class CandidateTimeSlotService {
     Optional<CandidateTimeSlot> overlappingSlot = candidateTimeSlotRepository.findByUserId(
             candidate.getId())
         .stream()
-        .filter(candidateTimeSlot -> candidateTimeSlot.getDate().equals(date) &&
+        .filter(candidateTimeSlot -> candidateTimeSlot.getDate().equals(date)
+            &&
             candidateTimeSlot.getFrom().equals(start) && candidateTimeSlot.getTo().equals(end))
         .findAny();
 

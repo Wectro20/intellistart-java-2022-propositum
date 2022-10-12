@@ -1,5 +1,6 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
+import com.intellias.intellistart.interviewplanning.model.WeekNumber;
 import com.intellias.intellistart.interviewplanning.service.GetWeekNumberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,16 @@ public class GetWeekNumberController {
     @Autowired
     private GetWeekNumberService getWeekNumberService;
 
-    @GetMapping
-    public ResponseEntity<Integer> getWeekOfYear() {
-        Integer weekOfYear = getWeekNumberService.getWeekNumber();
+    @GetMapping(path = "/weeks/current")
+    public ResponseEntity<WeekNumber> getCurrentWeekOfYear() {
+        WeekNumber weekOfYear = getWeekNumberService.getCurrentWeekNumber();
+        LOGGER.info("Successfully gave number of week " + weekOfYear);
+        return new ResponseEntity<>(weekOfYear, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/weeks/next")
+    public ResponseEntity<WeekNumber> getNextWeekOfYear() {
+        WeekNumber weekOfYear = getWeekNumberService.getNextWeekNumber();
         LOGGER.info("Successfully gave number of week " + weekOfYear);
         return new ResponseEntity<>(weekOfYear, HttpStatus.OK);
     }

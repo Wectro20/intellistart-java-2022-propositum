@@ -12,6 +12,7 @@ import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.LocalTime;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
  * Service for creating time slots for interviewer.
  */
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class InterviewerTimeSlotService {
 
   @Value("${interview.duration_minutes}")
@@ -35,15 +36,14 @@ public class InterviewerTimeSlotService {
   @DateTimeFormat(pattern = "HH:mm")
   private LocalTime workingHoursTo;
 
-  private final UserRepository userRepository;
-  private final InterviewerTimeSlotRepository interviewerTimeSlotRepository;
+  private UserRepository userRepository;
+  private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
 
   /**
    * Create time slot for Interviewer.
    *
-   * @param interviewerEmail for which create slot
+   * @param interviewerEmail    for which create slot
    * @param interviewerTimeSlot time slot which needs to create
-   *
    * @return saved interviewer time slot
    */
   public InterviewerTimeSlot createSlot(String interviewerEmail,
@@ -60,9 +60,11 @@ public class InterviewerTimeSlotService {
     User user = userRepository.findByEmail(interviewerEmail)
         .orElseThrow(InterviewerNotFoundException::new);
 
-    interviewerTimeSlotRepository.findByUserAndWeekNum(user, interviewerTimeSlot.getWeekNum())
+    interviewerTimeSlotRepository.findAllByUserAndWeekNum(user, interviewerTimeSlot.getWeekNum())
+        .stream()
         .filter(slot -> slot.getFrom().equals(from) && slot.getTo().equals(to))
         .filter(slot -> slot.getDayOfWeek().equals(dayOfWeek))
+        .findAny()
         .ifPresent(slot -> {
           throw new SlotIsOverlappingException(slot.getId());
         });

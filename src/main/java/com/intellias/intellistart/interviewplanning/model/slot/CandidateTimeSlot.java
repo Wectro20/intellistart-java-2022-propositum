@@ -1,7 +1,7 @@
 package com.intellias.intellistart.interviewplanning.model.slot;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.intellias.intellistart.interviewplanning.model.TimeSLotStatus;
+import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.views.Views;
 import java.time.LocalDate;
@@ -31,13 +31,13 @@ public class CandidateTimeSlot {
   @JsonView(Views.Public.class)
   private Long id;
   @JsonView(Views.Public.class)
-  private LocalTime start;
+  private LocalTime from;
   @JsonView(Views.Public.class)
-  private LocalTime end;
+  private LocalTime to;
   @JsonView(Views.Public.class)
   private LocalDate date;
   @JsonView(Views.Internal.class)
-  private TimeSLotStatus sLotStatus;
+  private TimeSlotStatus slotStatus;
   @JsonView(Views.Internal.class)
   @ManyToOne
   private User user;

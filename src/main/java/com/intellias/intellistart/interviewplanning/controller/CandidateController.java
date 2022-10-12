@@ -1,4 +1,4 @@
-package com.intellias.intellistart.interviewplanning.controllers;
+package com.intellias.intellistart.interviewplanning.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
@@ -42,7 +42,7 @@ public class CandidateController {
 
     CandidateTimeSlot timeSlotResponse = candidateService.createSlot(currentEmail,
         timeSlotRequest.getDate(),
-        timeSlotRequest.getStart(), timeSlotRequest.getEnd());
+        timeSlotRequest.getFrom(), timeSlotRequest.getTo());
 
     return new ResponseEntity<>(timeSlotResponse, HttpStatus.CREATED);
   }

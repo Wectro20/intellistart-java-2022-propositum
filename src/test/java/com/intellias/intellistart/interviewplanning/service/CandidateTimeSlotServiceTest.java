@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class CandidateTimeSlotServiceTest {
+class CandidateTimeSlotServiceTest {
 
   @Autowired
   private CandidateTimeSlotService candidateTimeSlotService;
@@ -18,7 +18,7 @@ public class CandidateTimeSlotServiceTest {
   @Test
   void createCandidateSlotWithParameters() {
     var slot = candidateTimeSlotService.createSlot(
-        15L,
+        "user@gmail.com",
         LocalDate.of(2022, 4, 12),
         LocalTime.of(9, 0), // 09:00
         LocalTime.of(17, 0) // 17:00

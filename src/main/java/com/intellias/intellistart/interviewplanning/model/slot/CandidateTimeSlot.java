@@ -1,6 +1,9 @@
 package com.intellias.intellistart.interviewplanning.model.slot;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.intellias.intellistart.interviewplanning.model.TimeSLotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
+import com.intellias.intellistart.interviewplanning.model.views.Views;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -25,10 +28,17 @@ public class CandidateTimeSlot {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonView(Views.Public.class)
   private Long id;
+  @JsonView(Views.Public.class)
   private LocalTime start;
+  @JsonView(Views.Public.class)
   private LocalTime end;
+  @JsonView(Views.Public.class)
   private LocalDate date;
+  @JsonView(Views.Internal.class)
+  private TimeSLotStatus sLotStatus;
+  @JsonView(Views.Internal.class)
   @ManyToOne
   private User user;
 }

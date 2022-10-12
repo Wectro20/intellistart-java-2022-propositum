@@ -3,7 +3,7 @@ package com.intellias.intellistart.interviewplanning;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.intellias.intellistart.interviewplanning.controllers.CandidateController;
+import com.intellias.intellistart.interviewplanning.controller.CandidateController;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ class CandidateControllerTest {
   @Test
   void createCandidateTimeSlot() {
     CandidateTimeSlot slot = candidateTimeSlotService.createSlot("user@gmail.com",
-        LocalDate.of(2022, 04, 12),
+        LocalDate.of(2022, 4, 12),
         LocalTime.of(8, 30),
         LocalTime.of(10, 0));
 
@@ -37,7 +37,7 @@ class CandidateControllerTest {
   @Test
   void createCandidateTimeSlotAndStatusIsCreated() {
     CandidateTimeSlot slot = candidateTimeSlotService.createSlot("user@gmail.com",
-        LocalDate.of(2022, 04, 12),
+        LocalDate.of(2022, 4, 12),
         LocalTime.of(8, 30),
         LocalTime.of(10, 0));
 

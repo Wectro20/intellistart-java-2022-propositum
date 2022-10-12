@@ -18,10 +18,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ApplicationExceptionHandler {
 
+  private static final String INTERVIEWER_NOT_FOUND = "interviewer_not_found";
   private static final String CANDIDATE_NOT_FOUND = "candidate_not_found";
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";
   private static final String INVALID_BOUNDARIES = "invalid_boundaries";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
+
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(InterviewerNotFoundException.class)
+  public ErrorResponse handleInterviewerNotFoundException() {
+    return new ErrorResponse(INTERVIEWER_NOT_FOUND, "interviewer was not found");
+  }
 
   @ResponseBody
   @ResponseStatus(value = HttpStatus.NOT_FOUND)

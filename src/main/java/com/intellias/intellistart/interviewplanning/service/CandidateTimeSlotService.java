@@ -4,7 +4,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekE
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
-import com.intellias.intellistart.interviewplanning.model.TimeSLotStatus;
+import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
@@ -30,26 +30,25 @@ public class CandidateTimeSlotService {
    * Create time slot for Candidate.
    *
    * @param candidateEmail email of candidate
-   * @param date        available date for time slot
-   * @param start start time of time slot
-   * @param end end time of time slot
-   *
+   * @param date           available date for time slot
+   * @param from           start time of time slot
+   * @param to             end time of time slot
    * @return candidate time slot
    */
   public CandidateTimeSlot createSlot(String candidateEmail, LocalDate date,
-      LocalTime start, LocalTime end) {
+      LocalTime from, LocalTime to) {
 
-    if (date != null && start != null && end != null) {
-      validateTimeSlot(date, start, end);
+    if (date != null && from != null && to != null) {
+      validateTimeSlot(date, from, to);
     }
 
-    User candidate = validateCandidate(candidateEmail, date, start, end);
+    User candidate = validateCandidate(candidateEmail, date, from, to);
 
     return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
         .date(date)
-        .start(start)
-        .end(end)
-        .sLotStatus(TimeSLotStatus.NEW)
+        .from(from)
+        .to(to)
+        .slotStatus(TimeSlotStatus.NEW)
         .user(candidate)
         .build());
   }
@@ -57,9 +56,9 @@ public class CandidateTimeSlotService {
   /**
    * Validate time slot for Candidate.
    *
-   * @param date           available date for time slot
-   * @param start          start time of time slot
-   * @param end            end time of time slot
+   * @param date  available date for time slot
+   * @param start start time of time slot
+   * @param end   end time of time slot
    */
   private void validateTimeSlot(LocalDate date, LocalTime start, LocalTime end) {
     if (date.isBefore(LocalDate.now()) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)
@@ -94,10 +93,14 @@ public class CandidateTimeSlotService {
     User candidate = optionalCandidate.orElseThrow(
         () -> new UserNotFoundException(candidateEmail));
 
-    if (candidateTimeSlotRepository.findByUserId(candidate.getId()).stream()
-        .anyMatch(candidateTimeSlot -> candidateTimeSlot.getDate().equals(date) &&
-            candidateTimeSlot.getStart().equals(start) && candidateTimeSlot.getEnd().equals(end))) {
-      throw new SlotIsOverlappingException(start + "; " + end);
+    Optional<CandidateTimeSlot> overlappingSlot = candidateTimeSlotRepository.findByUserId(candidate.getId())
+        .stream()
+        .filter(candidateTimeSlot -> candidateTimeSlot.getDate().equals(date) &&
+            candidateTimeSlot.getFrom().equals(start) && candidateTimeSlot.getTo().equals(end))
+        .findAny();
+
+    if(overlappingSlot.isPresent()){
+      throw new SlotIsOverlappingException(overlappingSlot.get().getId());
     }
 
     return candidate;

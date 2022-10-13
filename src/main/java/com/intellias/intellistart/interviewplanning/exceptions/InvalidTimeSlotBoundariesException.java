@@ -1,11 +1,8 @@
 package com.intellias.intellistart.interviewplanning.exceptions;
 
-import lombok.Getter;
-
 /**
- * Invalid Time Slot Boundaries Exception.
+ * Exception for invalid time slot boundaries.
  */
-@Getter
 public class InvalidTimeSlotBoundariesException extends RuntimeException {
 
   public InvalidTimeSlotBoundariesException(String message) {

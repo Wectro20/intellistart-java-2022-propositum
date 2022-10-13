@@ -34,7 +34,7 @@ public enum DayOfWeek {
     return Arrays.stream(DayOfWeek.values())
         .filter(day -> day.getValue().equals(dayOfWeek))
         .findAny()
-        .orElseThrow(InvalidDayOfWeekException::new);
+        .orElseThrow(() -> new InvalidDayOfWeekException(dayOfWeek));
   }
 
   @JsonValue

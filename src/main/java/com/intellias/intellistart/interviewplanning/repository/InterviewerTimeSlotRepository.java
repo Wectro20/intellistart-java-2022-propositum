@@ -2,7 +2,7 @@ package com.intellias.intellistart.interviewplanning.repository;
 
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterviewerTimeSlotRepository extends JpaRepository<InterviewerTimeSlot, Integer> {
 
-  Optional<InterviewerTimeSlot> findByUserAndWeekNum(User user, int weekNum);
+  List<InterviewerTimeSlot> findAllByUserAndWeekNum(User user, int weekNum);
 }

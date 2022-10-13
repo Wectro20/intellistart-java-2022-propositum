@@ -1,0 +1,4 @@
+{
+  "errorCode": "invalid_boundaries",
+  "errorMessage":"range cannot be shorter interview duration 90 min."
+}

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Rest Controller for getting week number.
+ */
 @RestController
 @RequestMapping
 public class GetWeekNumberController {
@@ -18,6 +21,12 @@ public class GetWeekNumberController {
 
   @Autowired
   private GetWeekNumberService getWeekNumberService;
+
+  /**
+   * Getting week number.
+   *
+   * @return response entity for current number of week and Http.Status.OK
+   */
   @GetMapping(path = "/weeks/current")
   public ResponseEntity<WeekNumber> getCurrentWeekOfYear() {
     WeekNumber weekOfYear = getWeekNumberService.getCurrentWeekNumber();
@@ -25,6 +34,11 @@ public class GetWeekNumberController {
     return new ResponseEntity<>(weekOfYear, HttpStatus.OK);
   }
 
+  /**
+   * Getting week number.
+   *
+   * @return response entity for next number of week and Http.Status.OK
+   */
   @GetMapping(path = "/weeks/next")
   public ResponseEntity<WeekNumber> getNextWeekOfYear() {
     WeekNumber weekOfYear = getWeekNumberService.getNextWeekNumber();

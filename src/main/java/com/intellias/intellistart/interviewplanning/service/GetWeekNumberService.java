@@ -1,21 +1,26 @@
 package com.intellias.intellistart.interviewplanning.service;
 
 import com.intellias.intellistart.interviewplanning.model.WeekNumber;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.util.Date;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 
+/**
+ * Service for getting current/next week number.
+ */
 @Service
 @ApplicationScope
 public class GetWeekNumberService {
   WeekNumber weekNumber = new WeekNumber();
 
-  @Autowired
+  /**
+   * Getting current week number.
+   *
+   * @return saved current weekNumber
+   */
   public WeekNumber getCurrentWeekNumber() {
     Date date = new Date();
     LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -28,6 +33,11 @@ public class GetWeekNumberService {
     return weekNumber;
   }
 
+  /**
+   * Getting next week number.
+   *
+   * @return saved next weekNumber
+   */
   public WeekNumber getNextWeekNumber() {
     Date date = new Date();
     LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

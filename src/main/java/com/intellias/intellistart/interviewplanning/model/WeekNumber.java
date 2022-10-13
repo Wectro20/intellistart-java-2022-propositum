@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Week number
+ * Week number.
  */
 @Getter
 @Setter

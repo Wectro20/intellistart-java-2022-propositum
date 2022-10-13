@@ -31,12 +31,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = InterviewPlanningApplication.class)
+@ActiveProfiles("test")
 public class InterviewTimeSlotControllerTest {
 
   private static final String CREATE_SLOT_NO_TO_FIELD_REQ_PATH = "request/createInterviewerSlotNoToFieldRequest.json";

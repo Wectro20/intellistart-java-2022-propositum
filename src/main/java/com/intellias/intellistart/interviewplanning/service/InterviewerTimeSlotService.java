@@ -5,6 +5,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
+import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Service for creating time slots for interviewer.
@@ -98,4 +101,37 @@ public class InterviewerTimeSlotService {
     return !(time.getMinute() == 30 || time.getMinute() == 0);
   }
 
+  /**
+   * Update time slot for Interviewer.
+   *
+   * @param interviewerEmail for which update slot
+   * @param slotId for which update
+   * @param interviewerTimeSlot request body of time slot
+   *
+   * @return updated interviewer time slot
+   */
+
+  public InterviewerTimeSlot updateSlot(String interviewerEmail, int slotId,
+      InterviewerTimeSlot interviewerTimeSlot) {
+
+    LocalTime from = interviewerTimeSlot.getFrom();
+    LocalTime to = interviewerTimeSlot.getTo();
+    DayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
+
+
+    if (to != null && from != null && dayOfWeek != null) {
+      validateTimeSlotBoundaries(from, to);
+    }
+
+    User user = userRepository.findByEmail(interviewerEmail)
+        .orElseThrow(InterviewerNotFoundException::new);
+
+    InterviewerTimeSlot outdatedInterviewerTimeSlot = interviewerTimeSlotRepository.findById(slotId)
+        .orElseThrow(SlotNotFoundException::new);
+
+    interviewerTimeSlot.setStatus(outdatedInterviewerTimeSlot.getStatus());
+    interviewerTimeSlot.setId(slotId);
+    interviewerTimeSlot.setUser(user);
+    return interviewerTimeSlotRepository.save(interviewerTimeSlot);
+  }
 }

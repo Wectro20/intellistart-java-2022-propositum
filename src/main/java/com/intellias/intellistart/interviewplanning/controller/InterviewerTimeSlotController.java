@@ -30,4 +30,21 @@ public class InterviewerTimeSlotController {
       @RequestBody InterviewerTimeSlot interviewerTimeSlot) {
     return interviewerTimeSlotService.createSlot(interviewerEmail, interviewerTimeSlot);
   }
+
+
+  /**
+   * Endpoint to update time slot for Interviewer.
+   *
+   * @param interviewerEmail for which update slot
+   * @param slotId for which update
+   * @param interviewerTimeSlot request body of time slot
+   *
+   * @return updated interviewer time slot
+   */
+  @PostMapping("/interviewers/{interviewerEmail}/slots/{slotId}")
+  public InterviewerTimeSlot updateSlot(@PathVariable String interviewerEmail,
+      @PathVariable Integer slotId,
+      @RequestBody InterviewerTimeSlot interviewerTimeSlot) {
+    return interviewerTimeSlotService.updateSlot(interviewerEmail, slotId, interviewerTimeSlot);
+  }
 }

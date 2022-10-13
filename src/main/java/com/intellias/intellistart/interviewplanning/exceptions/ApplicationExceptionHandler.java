@@ -23,6 +23,8 @@ public class ApplicationExceptionHandler {
   private static final String INVALID_BOUNDARIES = "invalid_boundaries";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
 
+  private static final String SLOT_NOT_FOUND = "slot_not_found";
+
   /**
    * Handle InterviewerNotFoundException.
    */
@@ -31,6 +33,17 @@ public class ApplicationExceptionHandler {
   @ExceptionHandler(InterviewerNotFoundException.class)
   public ErrorResponse handleInterviewerNotFoundException(InterviewerNotFoundException e) {
     return new ErrorResponse(INTERVIEWER_NOT_FOUND, "interviewer was not found");
+  }
+
+
+  /**
+   * Handle SlotNotFoundException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(SlotNotFoundException.class)
+  public ErrorResponse handleSlotNotFoundException(SlotNotFoundException e) {
+    return new ErrorResponse(SLOT_NOT_FOUND, "slot was not found");
   }
 
   /**

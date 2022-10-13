@@ -12,5 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterviewerTimeSlotRepository extends JpaRepository<InterviewerTimeSlot, Integer> {
 
+  Optional<InterviewerTimeSlot> findById(int id);
+
   Optional<InterviewerTimeSlot> findByUserAndWeekNum(User user, int weekNum);
 }

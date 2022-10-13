@@ -38,16 +38,6 @@ public class ApplicationExceptionHandler {
 
 
   /**
-   * Exception handler for SlotNotFoundException.
-   */
-  @ResponseBody
-  @ResponseStatus(value = HttpStatus.NOT_FOUND)
-  @ExceptionHandler(SlotNotFoundException.class)
-  public ErrorResponse handleSlotNotFoundException(SlotNotFoundException e) {
-    return new ErrorResponse(SLOT_NOT_FOUND, "slot was not found");
-  }
-
-  /**
    * Exception handler for UserNotFoundException.
    */
   @ResponseBody
@@ -55,6 +45,16 @@ public class ApplicationExceptionHandler {
   @ExceptionHandler(UserNotFoundException.class)
   public ErrorResponse handleInterviewerNotFoundException(UserNotFoundException e) {
     return new ErrorResponse(CANDIDATE_NOT_FOUND, e.getMessage());
+  }
+
+  /**
+   * Exception handler for SlotNotFoundException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(SlotNotFoundException.class)
+  public ErrorResponse handleSlotNotFoundException(SlotNotFoundException e) {
+    return new ErrorResponse(SLOT_NOT_FOUND, "slot was not found");
   }
 
   /**

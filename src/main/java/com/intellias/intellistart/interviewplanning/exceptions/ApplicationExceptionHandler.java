@@ -38,7 +38,7 @@ public class ApplicationExceptionHandler {
 
 
   /**
-   * Handle SlotNotFoundException.
+   * Exception handler for SlotNotFoundException.
    */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.NOT_FOUND)

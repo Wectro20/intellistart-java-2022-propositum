@@ -69,7 +69,7 @@ public class CandidateTimeSlotService {
 
     if (start.isAfter(LocalTime.of(22, 0)) || start.isBefore(LocalTime.of(8, 0))
         || end.isAfter(LocalTime.of(22, 0)) || end.isBefore(LocalTime.of(8, 0))
-        || start.getMinute() % 30 != 0 || end.getMinute() % 30 != 0) {
+        || start.getMinute() % 30 != 0 || end.getMinute() % 30 != 0 || start.isAfter(end)) {
       throw new InvalidTimeSlotBoundariesException(start + "; " + end);
     }
 

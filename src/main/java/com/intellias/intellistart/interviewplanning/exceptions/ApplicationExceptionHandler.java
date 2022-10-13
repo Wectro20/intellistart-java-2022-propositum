@@ -1,6 +1,6 @@
 package com.intellias.intellistart.interviewplanning.exceptions;
 
-import java.time.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

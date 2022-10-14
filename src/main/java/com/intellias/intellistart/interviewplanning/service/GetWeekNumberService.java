@@ -39,7 +39,7 @@ public class GetWeekNumberService {
     if (dates.get(ChronoField.ALIGNED_WEEK_OF_YEAR) + 1 > 52) {
       return new WeekNumber(1);
     } else {
-      return new WeekNumber(dates.get(ChronoField.ALIGNED_WEEK_OF_YEAR)+1);
+      return new WeekNumber(dates.get(ChronoField.ALIGNED_WEEK_OF_YEAR) + 1);
     }
   }
 }

@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
+import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
 import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
+import com.intellias.intellistart.interviewplanning.model.WeekNumber;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
@@ -44,6 +46,8 @@ public class InterviewerTimeSlotServiceTest {
 
   @Mock
   private UserRepository userRepository;
+  @Mock
+  private GetWeekNumberService weekService;
 
   @Captor
   private ArgumentCaptor<InterviewerTimeSlot> timeSlotArgumentCaptor;
@@ -53,7 +57,7 @@ public class InterviewerTimeSlotServiceTest {
   @BeforeEach
   public void setUp() {
     timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION, WORKING_HOUR_FROM,
-        WORKING_HOUR_TO, userRepository, timeSlotRepository);
+        WORKING_HOUR_TO, userRepository, timeSlotRepository,weekService);
 
     TIME_SLOT = InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))
@@ -61,6 +65,8 @@ public class InterviewerTimeSlotServiceTest {
         .dayOfWeek(DayOfWeek.MONDAY)
         .weekNum(15)
         .build();
+
+    Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(15));
   }
 
   @Test
@@ -192,5 +198,13 @@ public class InterviewerTimeSlotServiceTest {
 
     assertThrows(SlotIsOverlappingException.class,
         () -> timeSlotService.createSlot(EMAIL, TIME_SLOT));
+  }
+
+  @Test
+  public void createSlot_When_WeekNumberIsNotValid_Should_ThrowException() {
+    Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(16));
+    assertThrows(WeekNumberNotAcceptableException.class,
+        () -> timeSlotService.createSlot(EMAIL, TIME_SLOT));
+
   }
 }

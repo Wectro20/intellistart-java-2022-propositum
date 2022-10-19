@@ -2,6 +2,5 @@
   "id": 5,
   "from": "09:00",
   "to": "10:30",
-  "dayOfWeek": "Mon",
-  "weekNum": 23
+  "dayOfWeek": "Mon"
 }

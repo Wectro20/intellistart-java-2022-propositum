@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellias.intellistart.interviewplanning.FileTestUtils;
 import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
@@ -14,6 +15,7 @@ import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
+import com.intellias.intellistart.interviewplanning.service.GetWeekNumberService;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Optional;
@@ -77,6 +79,9 @@ public class InterviewTimeSlotControllerTest {
   private ObjectMapper objectMapper;
 
   @Autowired
+  private GetWeekNumberService weekNumberService;
+
+  @Autowired
   private FilterChainProxy springSecurityFilter;
 
   @Autowired
@@ -96,6 +101,11 @@ public class InterviewTimeSlotControllerTest {
 
     InterviewerTimeSlot expectedSlot = objectMapper.readValue(requestJson,
         InterviewerTimeSlot.class);
+
+    expectedSlot.setWeekNum(weekNumberService.getNextWeekNumber().getWeekNum());
+
+    requestJson = objectMapper.writeValueAsString(expectedSlot);
+
     expectedSlot.setId(5);
     expectedSlot.setStatus(TimeSlotStatus.NEW);
     expectedSlot.setUser(USER);
@@ -110,7 +120,7 @@ public class InterviewTimeSlotControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
-        .andExpect(content().json(FileTestUtils.readFile(CREATE_SLOT_RESP_PATH)));
+        .andExpect(content().json(prepareResponseWithWeekNum(CREATE_SLOT_RESP_PATH)));
 
     Mockito.verify(timeSlotRepository, Mockito.times(1))
         .save(timeSlotArgumentCaptor.capture());
@@ -129,6 +139,10 @@ public class InterviewTimeSlotControllerTest {
     InterviewerTimeSlot expectedSlot = objectMapper.readValue(requestJson,
         InterviewerTimeSlot.class);
 
+    expectedSlot.setWeekNum(weekNumberService.getNextWeekNumber().getWeekNum());
+
+    requestJson = objectMapper.writeValueAsString(expectedSlot);
+
     expectedSlot.setId(5);
     expectedSlot.setTo(LocalTime.of(10, 30));
     expectedSlot.setStatus(TimeSlotStatus.NEW);
@@ -145,7 +159,7 @@ public class InterviewTimeSlotControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
-        .andExpect(content().json(FileTestUtils.readFile(CREATE_SLOT_NO_TO_FIELD_RESP_PATH)));
+        .andExpect(content().json(prepareResponseWithWeekNum(CREATE_SLOT_NO_TO_FIELD_RESP_PATH)));
 
     Mockito.verify(timeSlotRepository, Mockito.times(1))
         .save(timeSlotArgumentCaptor.capture());
@@ -159,13 +173,31 @@ public class InterviewTimeSlotControllerTest {
   @Test
   public void createSlot_When_RangeIsShorterInterviewDuration_Should_ReturnErrorResponse()
       throws Exception {
+    String requestJson = FileTestUtils.readFile(CREATE_SLOT_SHORT_RANGE_REQ_PATH);
+
+    InterviewerTimeSlot requestSlot = objectMapper.readValue(requestJson,
+        InterviewerTimeSlot.class);
+
+    requestSlot.setWeekNum(weekNumberService.getNextWeekNumber().getWeekNum());
+
+    requestJson = objectMapper.writeValueAsString(requestSlot);
 
     mockMvc.perform(post("/interviewers/" + EMAIL + "/slots")
-            .content(FileTestUtils.readFile(CREATE_SLOT_SHORT_RANGE_REQ_PATH))
+            .content(requestJson)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(content().json(FileTestUtils.readFile(CREATE_SLOT_SHORT_RANGE_RESP_PATH)));
   }
 
+  private String prepareResponseWithWeekNum(String filePath) throws JsonProcessingException {
+    String responseJson = FileTestUtils.readFile(filePath);
+
+    InterviewerTimeSlot responseSlot = objectMapper.readValue(responseJson,
+        InterviewerTimeSlot.class);
+
+    responseSlot.setWeekNum(weekNumberService.getNextWeekNumber().getWeekNum());
+
+    return objectMapper.writeValueAsString(responseSlot);
+  }
 }

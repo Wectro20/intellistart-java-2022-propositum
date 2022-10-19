@@ -14,6 +14,9 @@ import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -83,6 +86,28 @@ public class InterviewerTimeSlotService {
 
     return interviewerTimeSlotRepository.save(interviewerTimeSlot);
   }
+  /**
+   * Get time slot for Interviewer.
+   *
+   * @param interviewerEmail    for which get slot
+   * @param weekNum for which week number get slots
+   * @return found time slots
+   */
+
+  public List<InterviewerTimeSlot> getTimeSlots(String interviewerEmail, int weekNum) {
+    int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
+    int currentWeekNum = weekService.getCurrentWeekNumber().getWeekNum();
+
+    if (weekNum != currentWeekNum && weekNum != nextWeekNum) {
+      throw new WeekNumberNotAcceptableException(Arrays.asList(currentWeekNum, nextWeekNum));
+    }
+
+    User user = userRepository.findByEmail(interviewerEmail)
+        .orElseThrow(InterviewerNotFoundException::new);
+
+    return interviewerTimeSlotRepository.findAllByUserAndWeekNum(
+        user, weekNum);
+  }
 
   private void validateTimeSlotBoundaries(LocalTime from, LocalTime to) {
     if (isNotRoundedTime(from) || isNotRoundedTime(to)) {
@@ -141,7 +166,8 @@ public class InterviewerTimeSlotService {
     int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
 
     if (!weekNum.equals(nextWeekNum)) {
-      throw new WeekNumberNotAcceptableException(nextWeekNum);
+      throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
     }
   }
+
 }

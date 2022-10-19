@@ -16,6 +16,7 @@ import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class InterviewerTimeSlotServiceTest {
   @BeforeEach
   public void setUp() {
     timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION, WORKING_HOUR_FROM,
-        WORKING_HOUR_TO, userRepository, timeSlotRepository,weekService);
+        WORKING_HOUR_TO, userRepository, timeSlotRepository, weekService);
 
     TIME_SLOT = InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))
@@ -206,5 +207,46 @@ public class InterviewerTimeSlotServiceTest {
     assertThrows(WeekNumberNotAcceptableException.class,
         () -> timeSlotService.createSlot(EMAIL, TIME_SLOT));
 
+  }
+
+  @Test
+  public void getTimeSlots_When_WeekNumberIsNotCurrent_Should_ThrowException() {
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(15));
+
+    assertThrows(WeekNumberNotAcceptableException.class,
+        () -> timeSlotService.getTimeSlots(EMAIL, 14));
+  }
+
+  @Test
+  public void getTimeSlots_When_WeekNumberIsNotNext_Should_ThrowException() {
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(15));
+    Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(16));
+
+    assertThrows(WeekNumberNotAcceptableException.class,
+        () -> timeSlotService.getTimeSlots(EMAIL, 18));
+  }
+
+  @Test
+  public void getTimeSlots_When_UserNotFound_Should_ThrowException() {
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(18));
+
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+
+    assertThrows(InterviewerNotFoundException.class,
+        () -> timeSlotService.getTimeSlots(EMAIL, 18));
+  }
+
+  @Test
+  public void getTimeSlots_Should_Success() {
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(15));
+    Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(16));
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
+
+    Mockito.when(timeSlotRepository.findAllByUserAndWeekNum(USER, 15)).thenReturn
+        (Collections.singletonList(TIME_SLOT));
+
+    List<InterviewerTimeSlot> actualTimeSlots = timeSlotService.getTimeSlots(EMAIL, 15);
+
+    assertEquals(Collections.singletonList(TIME_SLOT), actualTimeSlots);
   }
 }

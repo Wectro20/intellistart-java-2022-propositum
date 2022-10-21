@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping(path = "/candidates", produces = "application/json")
 public class CandidateController {
 
+  @Autowired
   private final CandidateTimeSlotService candidateService;
 
   @Autowired
@@ -51,7 +52,7 @@ public class CandidateController {
 
   // TODO: set path to "/candidate/{candidateEmail}/slots" after integrating OAuth2
   @GetMapping("/candidate/{candidateEmail}/slots")
-  public List<InterviewerTimeSlot> getSlots(@PathVariable String candidateEmail) {
+  public List<CandidateTimeSlot> getSlots(@PathVariable String candidateEmail) {
     return candidateService.getTimeSlots(candidateEmail);
   }
 }

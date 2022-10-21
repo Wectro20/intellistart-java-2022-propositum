@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,7 +27,10 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CandidateTimeSlotService {
 
+  @Autowired
   private UserRepository userRepository;
+
+  @Autowired
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
 
   /**
@@ -46,7 +50,7 @@ public class CandidateTimeSlotService {
       validateTimeSlot(date, from, to);
     }
 
-    User candidate = validateCandidate(candidateEmail, date, from, to);
+    //User candidate = validateCandidate(candidateEmail, date, from, to);
 
     return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
         .date(date)
@@ -57,7 +61,7 @@ public class CandidateTimeSlotService {
         .build());
   }
 
-  public List<InterviewerTimeSlot> getTimeSlots(String candidateEmail) {
+  public List<CandidateTimeSlot> getTimeSlots(String candidateEmail) {
     return candidateTimeSlotRepository.findByEmail(candidateEmail);
   }
 
@@ -94,6 +98,8 @@ public class CandidateTimeSlotService {
    * @param end            end time of time slot
    * @return candidate
    */
+  // TODO: Check if this functionality is required
+  /*
   private User validateCandidate(String candidateEmail, LocalDate date, LocalTime start,
       LocalTime end) {
     Optional<User> optionalCandidate = userRepository.findByEmail(candidateEmail);
@@ -114,4 +120,5 @@ public class CandidateTimeSlotService {
 
     return candidate;
   }
+   */
 }

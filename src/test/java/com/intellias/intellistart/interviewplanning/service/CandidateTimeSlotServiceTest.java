@@ -142,8 +142,9 @@ class CandidateTimeSlotServiceTest {
         .build();
 
     Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
+    /*
     Mockito.when(candidateTimeSlotRepository.findByUserId(user.getId()))
-        .thenReturn((List.of(candidateTimeSlot)));
+        .thenReturn((List.of(candidateTimeSlot)));*/
 
     SlotIsOverlappingException exception = assertThrows(
         SlotIsOverlappingException.class, () -> candidateTimeSlotService.createSlot(userEmail,

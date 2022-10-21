@@ -2,11 +2,14 @@ package com.intellias.intellistart.interviewplanning.controller;
 
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.service.InterviewerTimeSlotService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,5 +52,19 @@ public class InterviewerTimeSlotController {
       @PathVariable Integer slotId,
       @RequestBody InterviewerTimeSlot interviewerTimeSlot) {
     return interviewerTimeSlotService.updateSlot(interviewerEmail, slotId, interviewerTimeSlot);
+  }
+
+  /**
+   * Endpoint to get time slot for Interviewer.
+   *
+   * @param interviewerEmail for which get slots
+   * @param weekNum for which weekNum search slots
+   *
+   * @return interviewer time slots
+   */
+  @GetMapping("/interviewers/{interviewerEmail}/slots")
+  public List<InterviewerTimeSlot> getSlot(@PathVariable String interviewerEmail,
+      @RequestParam int weekNum) {
+    return interviewerTimeSlotService.getTimeSlots(interviewerEmail, weekNum);
   }
 }

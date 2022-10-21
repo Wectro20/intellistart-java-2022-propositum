@@ -166,7 +166,7 @@ public class InterviewerTimeSlotService {
     int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
 
     if (!weekNum.equals(nextWeekNum)) {
-      throw new WeekNumberNotAcceptableException(nextWeekNum);
+      throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
     }
   }
 }

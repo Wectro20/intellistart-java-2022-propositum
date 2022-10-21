@@ -2,17 +2,18 @@ package com.intellias.intellistart.interviewplanning.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
+import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.views.Views;
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
+import com.sun.xml.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * RestController for creating time slots for candidate.
@@ -46,5 +47,11 @@ public class CandidateController {
         timeSlotRequest.getFrom(), timeSlotRequest.getTo());
 
     return new ResponseEntity<>(timeSlotResponse, HttpStatus.CREATED);
+  }
+
+  // TODO: set path to "/candidate/{candidateEmail}/slots" after integrating OAuth2
+  @GetMapping("/candidate/{candidateEmail}/slots")
+  public List<InterviewerTimeSlot> getSlots(@PathVariable String candidateEmail) {
+    return candidateService.getTimeSlots(candidateEmail);
   }
 }

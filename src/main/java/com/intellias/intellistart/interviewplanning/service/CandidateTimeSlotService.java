@@ -7,12 +7,14 @@ import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundExcep
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
+import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class CandidateTimeSlotService {
    * @param to             end time of time slot
    * @return candidate time slot
    */
+  // TODO: Refactor class, don't need User Validation anymore
   public CandidateTimeSlot createSlot(String candidateEmail, LocalDate date,
       LocalTime from, LocalTime to) {
 
@@ -50,8 +53,12 @@ public class CandidateTimeSlotService {
         .from(from)
         .to(to)
         .slotStatus(TimeSlotStatus.NEW)
-        .user(candidate)
+        .email(candidateEmail)
         .build());
+  }
+
+  public List<InterviewerTimeSlot> getTimeSlots(String candidateEmail) {
+    return candidateTimeSlotRepository.findByEmail(candidateEmail);
   }
 
   /**

@@ -23,8 +23,15 @@ public class ApplicationExceptionHandler {
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";
   private static final String INVALID_BOUNDARIES = "invalid_boundaries";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
-
   private static final String SLOT_NOT_FOUND = "slot_not_found";
+  private static final String WEEK_NUMBER_NOT_ACCEPTABLE = "week_number_not_acceptable";
+
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.CONFLICT)
+  @ExceptionHandler(WeekNumberNotAcceptableException.class)
+  public ErrorResponse handleWeekNumberNotAcceptableException(WeekNumberNotAcceptableException e) {
+    return new ErrorResponse(WEEK_NUMBER_NOT_ACCEPTABLE, e.getMessage());
+  }
 
   /**
    * Exception handler for InterviewerNotFoundException.

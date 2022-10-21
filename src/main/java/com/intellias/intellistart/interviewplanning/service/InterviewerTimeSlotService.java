@@ -6,6 +6,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFou
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
 import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
@@ -14,12 +15,9 @@ import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Service for creating time slots for interviewer.
@@ -41,6 +39,7 @@ public class InterviewerTimeSlotService {
 
   private UserRepository userRepository;
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
+  private GetWeekNumberService weekService;
 
   /**
    * Create time slot for Interviewer.
@@ -55,6 +54,9 @@ public class InterviewerTimeSlotService {
     LocalTime from = interviewerTimeSlot.getFrom();
     LocalTime to = interviewerTimeSlot.getTo();
     DayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
+    Integer weekNum = interviewerTimeSlot.getWeekNum();
+
+    validateWeekNumber(weekNum);
 
     if (to != null) {
       validateTimeSlotBoundaries(from, to);
@@ -106,10 +108,9 @@ public class InterviewerTimeSlotService {
   /**
    * Update time slot for Interviewer.
    *
-   * @param interviewerEmail for which update slot
-   * @param slotId for which update
+   * @param interviewerEmail    for which update slot
+   * @param slotId              for which update
    * @param interviewerTimeSlot request body of time slot
-   *
    * @return updated interviewer time slot
    */
 
@@ -119,7 +120,6 @@ public class InterviewerTimeSlotService {
     LocalTime from = interviewerTimeSlot.getFrom();
     LocalTime to = interviewerTimeSlot.getTo();
     DayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
-
 
     if (to != null && from != null && dayOfWeek != null) {
       validateTimeSlotBoundaries(from, to);
@@ -135,5 +135,13 @@ public class InterviewerTimeSlotService {
     interviewerTimeSlot.setId(slotId);
     interviewerTimeSlot.setUser(user);
     return interviewerTimeSlotRepository.save(interviewerTimeSlot);
+  }
+
+  private void validateWeekNumber(Integer weekNum) {
+    int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
+
+    if (!weekNum.equals(nextWeekNum)) {
+      throw new WeekNumberNotAcceptableException(nextWeekNum);
+    }
   }
 }

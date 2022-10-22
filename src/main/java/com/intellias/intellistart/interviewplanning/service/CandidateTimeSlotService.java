@@ -1,20 +1,17 @@
 package com.intellias.intellistart.interviewplanning.service;
 
-import com.intellias.intellistart.interviewplanning.exceptions.*;
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
+import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
-import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
-import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
-import com.intellias.intellistart.interviewplanning.repository.UserRepository;
-
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
-
+import java.util.NoSuchElementException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +22,6 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class CandidateTimeSlotService {
-
-  @Autowired
-  private UserRepository userRepository;
 
   @Autowired
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
@@ -44,12 +38,7 @@ public class CandidateTimeSlotService {
   // TODO: Refactor class, don't need User Validation anymore
   public CandidateTimeSlot createSlot(String candidateEmail, LocalDate date,
                                       LocalTime from, LocalTime to) {
-    if (date != null && from != null && to != null) {
-      validateTimeSlot(date, from, to);
-    }
-
-    //User candidate = validateCandidate(candidateEmail, date, from, to);
-
+    validateTimeSlot(date, from, to);
     return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
         .date(date)
         .from(from)
@@ -59,23 +48,39 @@ public class CandidateTimeSlotService {
         .build());
   }
 
+  /**
+   * Get time slot for Candidate.
+   *
+   * @param candidateEmail email of candidate
+   * @return candidate time slot
+   */
   public List<CandidateTimeSlot> getTimeSlots(String candidateEmail) {
     return candidateTimeSlotRepository.findByEmail(candidateEmail);
   }
 
+  /**
+   * Get time slot for Candidate.
+   *
+   * @param id id of slot that has to be updated
+   * @return updated candidate time slot
+   */
   public CandidateTimeSlot updateSlot(long id, CandidateTimeSlot newSlotValue) {
-
-    if (newSlotValue.getDate() != null && newSlotValue.getFrom() != null && newSlotValue.getTo() != null) {
-      validateTimeSlot(newSlotValue.getDate(), newSlotValue.getFrom(), newSlotValue.getTo());
-    }
-
-    CandidateTimeSlot candidateTimeSlot = candidateTimeSlotRepository.findById(id).orElseThrow(SlotNotFoundException::new);
+    validateTimeSlot(newSlotValue.getDate(), newSlotValue.getFrom(), newSlotValue.getTo());
+    CandidateTimeSlot candidateTimeSlot = candidateTimeSlotRepository
+        .findById(id)
+        .orElseThrow(SlotNotFoundException::new);
     candidateTimeSlot.setDate(newSlotValue.getDate());
     candidateTimeSlot.setFrom(newSlotValue.getFrom());
     candidateTimeSlot.setTo(newSlotValue.getTo());
     return candidateTimeSlotRepository.save(candidateTimeSlot);
   }
 
+  /**
+   * Get time slot id for Candidate.
+   *
+   * @param id id of slot
+   * @return found time slot by id
+   */
   public CandidateTimeSlot getTimeSlotId(final Long id) {
     return candidateTimeSlotRepository.findById(id).orElse(null);
   }
@@ -88,6 +93,10 @@ public class CandidateTimeSlotService {
    * @param end   end time of time slot
    */
   private void validateTimeSlot(LocalDate date, LocalTime start, LocalTime end) {
+    if (date == null || start == null || end == null) {
+      throw new NoSuchElementException();
+    }
+
     if (date.isBefore(LocalDate.now()) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)
         || date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
       throw new InvalidDayOfWeekException(date.toString());
@@ -103,7 +112,7 @@ public class CandidateTimeSlotService {
       throw new InvalidTimeSlotBoundariesException(start + "; " + end);
     }
   }
-
+  /*
   /**
    * Validate candidate for time slot.
    *

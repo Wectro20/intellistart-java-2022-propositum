@@ -65,9 +65,8 @@ public class CandidateController {
                                                       @RequestBody final CandidateTimeSlot candidateTimeSlot) {
     if (candidateService.getTimeSlotId(id) == null) {
       LOGGER.info("Can't update product without id - null value was passed instead of it");
-      throw new SlotNotFoundException("Candidate slot with id: " + id + " not found");
+      throw new SlotNotFoundException();
     }
-    candidateTimeSlot.setId(id);
-    candidateService.updateSlot(candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo());
+    return new ResponseEntity<>(candidateService.updateSlot(id, candidateTimeSlot), HttpStatus.OK);
   }
 }

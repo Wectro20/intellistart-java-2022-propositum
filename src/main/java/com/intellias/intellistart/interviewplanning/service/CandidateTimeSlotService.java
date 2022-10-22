@@ -1,9 +1,6 @@
 package com.intellias.intellistart.interviewplanning.service;
 
-import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
-import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
-import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
-import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.*;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
@@ -66,18 +63,17 @@ public class CandidateTimeSlotService {
     return candidateTimeSlotRepository.findByEmail(candidateEmail);
   }
 
-  public CandidateTimeSlot updateSlot(LocalDate date,
-                                      LocalTime from, LocalTime to) {
-    if (date != null && from != null && to != null) {
-      validateTimeSlot(date, from, to);
+  public CandidateTimeSlot updateSlot(long id, CandidateTimeSlot newSlotValue) {
+
+    if (newSlotValue.getDate() != null && newSlotValue.getFrom() != null && newSlotValue.getTo() != null) {
+      validateTimeSlot(newSlotValue.getDate(), newSlotValue.getFrom(), newSlotValue.getTo());
     }
 
-    return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
-        .date(date)
-        .from(from)
-        .to(to)
-        .slotStatus(TimeSlotStatus.NEW)
-        .build());
+    CandidateTimeSlot candidateTimeSlot = candidateTimeSlotRepository.findById(id).orElseThrow(SlotNotFoundException::new);
+    candidateTimeSlot.setDate(newSlotValue.getDate());
+    candidateTimeSlot.setFrom(newSlotValue.getFrom());
+    candidateTimeSlot.setTo(newSlotValue.getTo());
+    return candidateTimeSlotRepository.save(candidateTimeSlot);
   }
 
   public CandidateTimeSlot getTimeSlotId(final Long id) {

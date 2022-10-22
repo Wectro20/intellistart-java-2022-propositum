@@ -10,12 +10,14 @@ import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
+
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,8 +46,7 @@ public class CandidateTimeSlotService {
    */
   // TODO: Refactor class, don't need User Validation anymore
   public CandidateTimeSlot createSlot(String candidateEmail, LocalDate date,
-      LocalTime from, LocalTime to) {
-
+                                      LocalTime from, LocalTime to) {
     if (date != null && from != null && to != null) {
       validateTimeSlot(date, from, to);
     }
@@ -63,6 +64,24 @@ public class CandidateTimeSlotService {
 
   public List<CandidateTimeSlot> getTimeSlots(String candidateEmail) {
     return candidateTimeSlotRepository.findByEmail(candidateEmail);
+  }
+
+  public CandidateTimeSlot updateSlot(LocalDate date,
+                                      LocalTime from, LocalTime to) {
+    if (date != null && from != null && to != null) {
+      validateTimeSlot(date, from, to);
+    }
+
+    return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
+        .date(date)
+        .from(from)
+        .to(to)
+        .slotStatus(TimeSlotStatus.NEW)
+        .build());
+  }
+
+  public CandidateTimeSlot getTimeSlotId(final Long id) {
+    return candidateTimeSlotRepository.findById(id).orElse(null);
   }
 
   /**

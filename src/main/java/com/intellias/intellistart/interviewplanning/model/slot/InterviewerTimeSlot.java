@@ -9,6 +9,7 @@ import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +33,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@JsonInclude(Include.NON_EMPTY)
 public class InterviewerTimeSlot {
 
   @Id

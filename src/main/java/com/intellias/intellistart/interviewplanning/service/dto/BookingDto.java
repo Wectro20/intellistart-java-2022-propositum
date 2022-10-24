@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * It is DTO for booking entity.
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

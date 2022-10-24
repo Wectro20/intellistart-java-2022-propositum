@@ -34,19 +34,24 @@ public class CandidateTimeSlot {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @JsonView(Views.Public.class)
   private Long id;
+
   @Column(name = "\"from\"")
   @JsonFormat(pattern = "HH:mm")
   @JsonView(Views.Public.class)
   private LocalTime from;
+
   @Column(name = "\"to\"")
   @JsonFormat(pattern = "HH:mm")
   @JsonView(Views.Public.class)
   private LocalTime to;
+
   @JsonView(Views.Public.class)
   private LocalDate date;
+
   @JsonView(Views.Internal.class)
   private TimeSlotStatus slotStatus;
+
   @JsonView(Views.Internal.class)
-  @ManyToOne
-  private User user;
+  private String email;
+
 }

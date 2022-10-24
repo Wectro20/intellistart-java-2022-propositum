@@ -11,5 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CandidateTimeSlotRepository extends JpaRepository<CandidateTimeSlot, Long> {
 
-  List<CandidateTimeSlot> findByUserId(Long id);
+  // TODO: Check if this functionality is required
+  //List<CandidateTimeSlot> findByUserId(Long id);
+
+  List<CandidateTimeSlot> findByEmail(String candidateEmail);
 }

@@ -50,7 +50,7 @@ class CandidateControllerTest {
       .from(LocalTime.of(9, 0))
       .to(LocalTime.of(17, 0))
       .slotStatus(TimeSlotStatus.NEW)
-      .user(user)
+      .email(userEmail)
       .build();
 
   private static final String RIGHT_REQUEST = "{\n"
@@ -117,7 +117,7 @@ class CandidateControllerTest {
         .from(LocalTime.of(9, 0))
         .to(LocalTime.of(17, 0))
         .slotStatus(TimeSlotStatus.NEW)
-        .user(user)
+        .email(userEmail)
         .build();
   }
 

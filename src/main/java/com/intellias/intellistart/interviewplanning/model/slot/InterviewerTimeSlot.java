@@ -37,7 +37,7 @@ public class InterviewerTimeSlot {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Long id;
   @JsonFormat(pattern = "HH:mm")
   @Column(name = "\"from\"")
   private LocalTime from;

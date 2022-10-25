@@ -106,7 +106,7 @@ public class InterviewTimeSlotControllerTest {
 
     requestJson = objectMapper.writeValueAsString(expectedSlot);
 
-    expectedSlot.setId(5);
+    expectedSlot.setId(5L);
     expectedSlot.setStatus(TimeSlotStatus.NEW);
     expectedSlot.setUser(USER);
 
@@ -126,7 +126,7 @@ public class InterviewTimeSlotControllerTest {
         .save(timeSlotArgumentCaptor.capture());
 
     InterviewerTimeSlot actualSlot = timeSlotArgumentCaptor.getValue();
-    actualSlot.setId(5);
+    actualSlot.setId(5L);
 
     Assertions.assertEquals(expectedSlot, actualSlot);
   }
@@ -143,7 +143,7 @@ public class InterviewTimeSlotControllerTest {
 
     requestJson = objectMapper.writeValueAsString(expectedSlot);
 
-    expectedSlot.setId(5);
+    expectedSlot.setId(5L);
     expectedSlot.setTo(LocalTime.of(10, 30));
     expectedSlot.setStatus(TimeSlotStatus.NEW);
     expectedSlot.setUser(USER);
@@ -165,7 +165,7 @@ public class InterviewTimeSlotControllerTest {
         .save(timeSlotArgumentCaptor.capture());
 
     InterviewerTimeSlot actualSlot = timeSlotArgumentCaptor.getValue();
-    actualSlot.setId(5);
+    actualSlot.setId(5L);
 
     Assertions.assertEquals(expectedSlot, actualSlot);
   }

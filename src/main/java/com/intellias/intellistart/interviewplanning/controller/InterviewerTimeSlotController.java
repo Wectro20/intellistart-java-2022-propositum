@@ -49,7 +49,7 @@ public class InterviewerTimeSlotController {
    */
   @PostMapping("/interviewers/{interviewerEmail}/slots/{slotId}")
   public InterviewerTimeSlot updateSlot(@PathVariable String interviewerEmail,
-      @PathVariable Integer slotId,
+      @PathVariable Long slotId,
       @RequestBody InterviewerTimeSlot interviewerTimeSlot) {
     return interviewerTimeSlotService.updateSlot(interviewerEmail, slotId, interviewerTimeSlot);
   }

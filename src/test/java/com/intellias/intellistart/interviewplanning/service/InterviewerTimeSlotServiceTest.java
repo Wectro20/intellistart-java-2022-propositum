@@ -32,9 +32,6 @@ public class InterviewerTimeSlotServiceTest {
 
   private static final int INTERVIEW_DURATION = 90;
 
-  private static final LocalTime WORKING_HOUR_FROM = LocalTime.of(8, 0);
-  private static final LocalTime WORKING_HOUR_TO = LocalTime.of(22, 0);
-
   private static final String EMAIL = "test@.com";
 
   private static InterviewerTimeSlot TIME_SLOT;
@@ -49,6 +46,8 @@ public class InterviewerTimeSlotServiceTest {
   private UserRepository userRepository;
   @Mock
   private GetWeekNumberService weekService;
+  @Mock
+  private TimeSlotValidationService timeSlotValidationService;
 
   @Captor
   private ArgumentCaptor<InterviewerTimeSlot> timeSlotArgumentCaptor;
@@ -57,8 +56,8 @@ public class InterviewerTimeSlotServiceTest {
 
   @BeforeEach
   public void setUp() {
-    timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION, WORKING_HOUR_FROM,
-        WORKING_HOUR_TO, userRepository, timeSlotRepository, weekService);
+    timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION,
+        userRepository, timeSlotRepository, weekService, timeSlotValidationService);
 
     TIME_SLOT = InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))
@@ -74,6 +73,8 @@ public class InterviewerTimeSlotServiceTest {
   public void createSlot_Should_SuccessfullyCreateSlotAndSave() {
     Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
     timeSlotService.createSlot(EMAIL, TIME_SLOT);
+
+
     Mockito.verify(timeSlotRepository, Mockito.times(1))
         .save(timeSlotArgumentCaptor.capture());
 
@@ -103,84 +104,6 @@ public class InterviewerTimeSlotServiceTest {
     assertEquals(TIME_SLOT.getDayOfWeek(), actualTimeSlot.getDayOfWeek());
     assertEquals(TimeSlotStatus.NEW, actualTimeSlot.getStatus());
     assertEquals(USER, actualTimeSlot.getUser());
-  }
-
-  @Test
-  public void createSlot_When_FromIsNotRounded_Should_ThrowException() {
-    TIME_SLOT.setFrom(LocalTime.of(10, 2));
-
-    InvalidTimeSlotBoundariesException exception = assertThrows(
-        InvalidTimeSlotBoundariesException.class, () ->
-            timeSlotService.createSlot(EMAIL, TIME_SLOT));
-
-    assertEquals("Minutes should be rounded to :00 or :30", exception.getMessage());
-  }
-
-  @Test
-  public void createSlot_When_ToIsNotRounded_Should_ThrowException() {
-    TIME_SLOT.setTo(LocalTime.of(11, 32));
-
-    InvalidTimeSlotBoundariesException exception = assertThrows(
-        InvalidTimeSlotBoundariesException.class, () ->
-            timeSlotService.createSlot(EMAIL, TIME_SLOT));
-
-    assertEquals("Minutes should be rounded to :00 or :30", exception.getMessage());
-  }
-
-  @Test
-  public void createSlot_When_FromIsAfterTo_Should_ThrowException() {
-    TIME_SLOT.setFrom(LocalTime.of(12, 30));
-    TIME_SLOT.setTo(LocalTime.of(9, 30));
-
-    InvalidTimeSlotBoundariesException exception = assertThrows(
-        InvalidTimeSlotBoundariesException.class, () ->
-            timeSlotService.createSlot(EMAIL, TIME_SLOT));
-
-    assertEquals("from is after to", exception.getMessage());
-  }
-
-  @Test
-  public void createSlot_When_DiffBetweenFromAndToIsShorterDuration_Should_ThrowException() {
-    TIME_SLOT.setFrom(LocalTime.of(11, 0));
-    TIME_SLOT.setTo(LocalTime.of(12, 0));
-
-    String expectedErrorMessage = "range cannot be shorter interview duration "
-        + INTERVIEW_DURATION
-        + " min.";
-
-    InvalidTimeSlotBoundariesException exception = assertThrows(
-        InvalidTimeSlotBoundariesException.class, () ->
-            timeSlotService.createSlot(EMAIL, TIME_SLOT));
-
-    assertEquals(expectedErrorMessage, exception.getMessage());
-  }
-
-  @Test
-  public void createSlot_When_ToViolatesWorkingHours_Should_ThrowException() {
-    TIME_SLOT.setTo(WORKING_HOUR_TO.plusHours(1));
-
-    InvalidTimeSlotBoundariesException exception = assertThrows(
-        InvalidTimeSlotBoundariesException.class, () ->
-            timeSlotService.createSlot(EMAIL, TIME_SLOT));
-
-    String expectedErrorMessage =
-        "Range violates working hours [" + WORKING_HOUR_FROM + " - " + WORKING_HOUR_TO + "]";
-
-    assertEquals(expectedErrorMessage, exception.getMessage());
-  }
-
-  @Test
-  public void createSlot_When_FromViolatesWorkingHours_Should_ThrowException() {
-    TIME_SLOT.setFrom(WORKING_HOUR_FROM.minusHours(1));
-
-    InvalidTimeSlotBoundariesException exception = assertThrows(
-        InvalidTimeSlotBoundariesException.class, () ->
-            timeSlotService.createSlot(EMAIL, TIME_SLOT));
-
-    String expectedErrorMessage =
-        "Range violates working hours [" + WORKING_HOUR_FROM + " - " + WORKING_HOUR_TO + "]";
-
-    assertEquals(expectedErrorMessage, exception.getMessage());
   }
 
   @Test

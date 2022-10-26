@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_EMPTY)
 public class InterviewerTimeSlotDto {
 
-  private int id;
+  private Long id;
   @JsonFormat(pattern = "HH:mm")
   private LocalTime from;
   @JsonFormat(pattern = "HH:mm")

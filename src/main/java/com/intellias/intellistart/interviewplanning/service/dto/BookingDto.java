@@ -21,12 +21,15 @@ public class BookingDto {
 
   @JsonProperty(access = Access.READ_ONLY)
   private Long id;
-  private long interviewerTimeSlotId;
-  private long candidateTimeSlotId;
+  private Long interviewerTimeSlotId;
+  private Long candidateTimeSlotId;
   @JsonFormat(pattern = "HH:mm")
+  @JsonProperty("from")
   private LocalTime startTime;
   @JsonFormat(pattern = "HH:mm")
+  @JsonProperty("to")
   private LocalTime endTime;
   private String subject;
+  private String description;
 
 }

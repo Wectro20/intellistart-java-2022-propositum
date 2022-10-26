@@ -21,7 +21,9 @@ public class ApplicationExceptionHandler {
   private static final String INTERVIEWER_NOT_FOUND = "interviewer_not_found";
   private static final String CANDIDATE_NOT_FOUND = "candidate_not_found";
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";
-  private static final String INVALID_BOUNDARIES = "invalid_boundaries";
+  private static final String BOOKING_IS_OVERLAPPING = "booking_is_overlapping";
+  public static final String INVALID_BOUNDARIES = "invalid_boundaries";
+  public static final String SUBJECT_DESCRIPTION_NOT_VALID = "subject_or_description_not_valid";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
   private static final String SLOT_NOT_FOUND = "slot_not_found";
   private static final String WEEK_NUMBER_NOT_ACCEPTABLE = "week_number_not_acceptable";
@@ -65,6 +67,16 @@ public class ApplicationExceptionHandler {
   }
 
   /**
+   * Exception handler for BookingIsAlreadyExistsException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.CONFLICT)
+  @ExceptionHandler(BookingIsAlreadyExistsException.class)
+  public ErrorResponse handleBookingIsAlreadyExistsException(BookingIsAlreadyExistsException e) {
+    return new ErrorResponse(BOOKING_IS_OVERLAPPING, e.getMessage());
+  }
+
+  /**
    * Exception handler for SlotIsOverlappingException.
    */
   @ResponseBody
@@ -83,6 +95,16 @@ public class ApplicationExceptionHandler {
   public ErrorResponse handleInvalidTimeSlotBoundariesException(
       InvalidTimeSlotBoundariesException e) {
     return new ErrorResponse(INVALID_BOUNDARIES, e.getMessage());
+  }
+
+  /**
+   * Exception handler for InvalidTimeSlotBoundariesException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(BookingValidationException.class)
+  public ErrorResponse handleBookingValidationException(BookingValidationException e) {
+    return new ErrorResponse(e.getErrorMessage(), e.getMessage());
   }
 
   /**

@@ -11,9 +11,7 @@ import org.springframework.stereotype.Repository;
  * Its repository for InterviewTimeSlot entity.
  */
 @Repository
-public interface InterviewerTimeSlotRepository extends JpaRepository<InterviewerTimeSlot, Integer> {
-
-  Optional<InterviewerTimeSlot> findById(int id);
+public interface InterviewerTimeSlotRepository extends JpaRepository<InterviewerTimeSlot, Long> {
 
   List<InterviewerTimeSlot> findAllByUserAndWeekNum(User user, int weekNum);
 

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Booking {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +31,7 @@ public class Booking {
   @ManyToOne
   @JsonIgnore
   private InterviewerTimeSlot interviewerTimeSlot;
-  @OneToOne
+  @ManyToOne
   @JsonIgnore
   private CandidateTimeSlot candidateTimeSlot;
   @JsonFormat(pattern = "HH:mm")
@@ -37,5 +39,6 @@ public class Booking {
   @JsonFormat(pattern = "HH:mm")
   private LocalTime endTime;
   private String subject;
+  private String description;
 }
 

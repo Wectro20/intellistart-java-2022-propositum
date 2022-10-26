@@ -37,17 +37,10 @@ public class InterviewerTimeSlotService {
   @Value("${interview.duration_minutes}")
   private Integer interviewDuration;
 
-  @Value("${working_hours.from}")
-  @DateTimeFormat(pattern = "HH:mm")
-  private LocalTime workingHoursFrom;
-
-  @Value("${working_hours.to}")
-  @DateTimeFormat(pattern = "HH:mm")
-  private LocalTime workingHoursTo;
-
   private UserRepository userRepository;
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
   private GetWeekNumberService weekService;
+  private TimeSlotValidationService timeSlotValidationService;
 
   /**
    * Create time slot for Interviewer.
@@ -67,7 +60,7 @@ public class InterviewerTimeSlotService {
     validateWeekNumber(weekNum);
 
     if (to != null) {
-      validateTimeSlotBoundaries(from, to);
+      timeSlotValidationService.validateTimeSlotBoundaries(from, to);
     }
 
     User user = userRepository.findByEmail(interviewerEmail)
@@ -135,26 +128,6 @@ public class InterviewerTimeSlotService {
         .build();
   }
 
-  private void validateTimeSlotBoundaries(LocalTime from, LocalTime to) {
-    if (isNotRoundedTime(from) || isNotRoundedTime(to)) {
-      throw new InvalidTimeSlotBoundariesException("Minutes should be rounded to :00 or :30");
-    } else if (from.isAfter(to)) {
-      throw new InvalidTimeSlotBoundariesException("from is after to");
-
-    } else if (MINUTES.between(from, to) < interviewDuration) {
-      String message = "range cannot be shorter interview duration " + interviewDuration + " min.";
-
-      throw new InvalidTimeSlotBoundariesException(message);
-    } else if (from.isBefore(workingHoursFrom) || to.isAfter(workingHoursTo)) {
-      String message =
-          "Range violates working hours [" + workingHoursFrom + " - " + workingHoursTo + "]";
-      throw new InvalidTimeSlotBoundariesException(message);
-    }
-  }
-
-  private boolean isNotRoundedTime(LocalTime time) {
-    return !(time.getMinute() == 30 || time.getMinute() == 0);
-  }
 
   /**
    * Update time slot for Interviewer.
@@ -165,7 +138,7 @@ public class InterviewerTimeSlotService {
    * @return updated interviewer time slot
    */
 
-  public InterviewerTimeSlot updateSlot(String interviewerEmail, int slotId,
+  public InterviewerTimeSlot updateSlot(String interviewerEmail, Long slotId,
       InterviewerTimeSlot interviewerTimeSlot) {
 
     LocalTime from = interviewerTimeSlot.getFrom();
@@ -173,7 +146,7 @@ public class InterviewerTimeSlotService {
     DayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
 
     if (to != null && from != null && dayOfWeek != null) {
-      validateTimeSlotBoundaries(from, to);
+      timeSlotValidationService.validateTimeSlotBoundaries(from, to);
     }
 
     User user = userRepository.findByEmail(interviewerEmail)

@@ -14,6 +14,7 @@ import com.intellias.intellistart.interviewplanning.model.WeekNumber;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +65,7 @@ public class InterviewerTimeSlotServiceTest {
         .to(LocalTime.of(11, 30))
         .dayOfWeek(DayOfWeek.MONDAY)
         .weekNum(15)
+        .bookings(Collections.emptyList())
         .build();
 
     Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(15));
@@ -168,8 +170,17 @@ public class InterviewerTimeSlotServiceTest {
     Mockito.when(timeSlotRepository.findAllByUserAndWeekNum(USER, 15)).thenReturn
         (Collections.singletonList(TIME_SLOT));
 
-    List<InterviewerTimeSlot> actualTimeSlots = timeSlotService.getTimeSlots(EMAIL, 15);
+    InterviewerTimeSlotDto expectedSlot = InterviewerTimeSlotDto.builder()
+        .id(TIME_SLOT.getId())
+        .from(TIME_SLOT.getFrom())
+        .to(TIME_SLOT.getTo())
+        .dayOfWeek(TIME_SLOT.getDayOfWeek())
+        .weekNum(TIME_SLOT.getWeekNum())
+        .bookings(Collections.emptyList())
+        .build();
 
-    assertEquals(Collections.singletonList(TIME_SLOT), actualTimeSlots);
+    List<InterviewerTimeSlotDto> actualTimeSlots = timeSlotService.getTimeSlots(EMAIL, 15);
+
+    assertEquals(Collections.singletonList(expectedSlot), actualTimeSlots);
   }
 }

@@ -2,6 +2,7 @@ package com.intellias.intellistart.interviewplanning.controller;
 
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.service.InterviewerTimeSlotService;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,7 @@ public class InterviewerTimeSlotController {
    * @return interviewer time slots
    */
   @GetMapping("/interviewers/{interviewerEmail}/slots")
-  public List<InterviewerTimeSlot> getSlot(@PathVariable String interviewerEmail,
+  public List<InterviewerTimeSlotDto> getSlot(@PathVariable String interviewerEmail,
       @RequestParam int weekNum) {
     return interviewerTimeSlotService.getTimeSlots(interviewerEmail, weekNum);
   }

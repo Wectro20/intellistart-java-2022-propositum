@@ -7,16 +7,21 @@ import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBo
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
+import com.intellias.intellistart.interviewplanning.model.Booking;
 import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
+import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -94,7 +99,7 @@ public class InterviewerTimeSlotService {
    * @return found time slots
    */
 
-  public List<InterviewerTimeSlot> getTimeSlots(String interviewerEmail, int weekNum) {
+  public List<InterviewerTimeSlotDto> getTimeSlots(String interviewerEmail, int weekNum) {
     int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
     int currentWeekNum = weekService.getCurrentWeekNumber().getWeekNum();
 
@@ -105,8 +110,29 @@ public class InterviewerTimeSlotService {
     User user = userRepository.findByEmail(interviewerEmail)
         .orElseThrow(InterviewerNotFoundException::new);
 
-    return interviewerTimeSlotRepository.findAllByUserAndWeekNum(
-        user, weekNum);
+    return interviewerTimeSlotRepository.findAllByUserAndWeekNum(user, weekNum).stream()
+        .map(slot -> InterviewerTimeSlotDto.builder()
+            .id(slot.getId())
+            .from(slot.getFrom())
+            .to(slot.getTo())
+            .dayOfWeek(slot.getDayOfWeek())
+            .weekNum(slot.getWeekNum())
+            .bookings(slot.getBookings().stream()
+                .map(this::buildBookingDto)
+                .collect(Collectors.toList()))
+                .build())
+        .collect(Collectors.toList());
+  }
+
+  private BookingDto buildBookingDto(Booking booking) {
+    return BookingDto.builder()
+        .id(booking.getId())
+        .startTime(booking.getStartTime())
+        .endTime(booking.getEndTime())
+        .interviewerTimeSlotId(booking.getInterviewerTimeSlot().getId())
+        .candidateTimeSlotId(booking.getCandidateTimeSlot().getId())
+        .subject(booking.getSubject())
+        .build();
   }
 
   private void validateTimeSlotBoundaries(LocalTime from, LocalTime to) {
@@ -169,4 +195,5 @@ public class InterviewerTimeSlotService {
       throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
     }
   }
+
 }

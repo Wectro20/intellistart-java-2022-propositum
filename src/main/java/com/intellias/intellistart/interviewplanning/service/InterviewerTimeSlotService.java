@@ -8,7 +8,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlapping
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
@@ -16,9 +16,10 @@ import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class InterviewerTimeSlotService {
 
     LocalTime from = interviewerTimeSlot.getFrom();
     LocalTime to = interviewerTimeSlot.getTo();
-    DayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
+    InterviewDayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
     Integer weekNum = interviewerTimeSlot.getWeekNum();
 
     validateWeekNumber(weekNum);
@@ -111,13 +112,20 @@ public class InterviewerTimeSlotService {
             .dayOfWeek(slot.getDayOfWeek())
             .weekNum(slot.getWeekNum())
             .bookings(slot.getBookings().stream()
-                .map(this::buildBookingDto)
+                .map(InterviewerTimeSlotService::buildBookingDto)
                 .collect(Collectors.toList()))
                 .build())
         .collect(Collectors.toList());
   }
 
-  private BookingDto buildBookingDto(Booking booking) {
+  /**
+   * Convert Booking entity to BookingDTO.
+   *
+   * @param booking Booking entity
+
+   * @return BookingDTO
+   */
+  public static BookingDto buildBookingDto(Booking booking) {
     return BookingDto.builder()
         .id(booking.getId())
         .startTime(booking.getStartTime())
@@ -125,6 +133,7 @@ public class InterviewerTimeSlotService {
         .interviewerTimeSlotId(booking.getInterviewerTimeSlot().getId())
         .candidateTimeSlotId(booking.getCandidateTimeSlot().getId())
         .subject(booking.getSubject())
+        .description(booking.getDescription())
         .build();
   }
 
@@ -143,7 +152,7 @@ public class InterviewerTimeSlotService {
 
     LocalTime from = interviewerTimeSlot.getFrom();
     LocalTime to = interviewerTimeSlot.getTo();
-    DayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
+    InterviewDayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
 
     if (to != null && from != null && dayOfWeek != null) {
       timeSlotValidationService.validateTimeSlotBoundaries(from, to);

@@ -74,7 +74,7 @@ class CandidateControllerTest {
 
   private static final String BAD_DAY_OF_WEEK_RESPONSE = "{"
       + "\"errorCode\":\"invalid_day_of_week\","
-      + "\"errorMessage\":\"Possible values: [Mon, Tue, Wed, Thu, Fri, Sat, Sun]"
+      + "\"errorMessage\":\"Possible values: [Mon, Tue, Wed, Thu, Fri]"
       + "\"}";
 
   private static final String BAD_FROM_BOUNDARIES_EXCEPTION = "{"

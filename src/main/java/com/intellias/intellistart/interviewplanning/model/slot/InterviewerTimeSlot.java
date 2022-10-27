@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.intellias.intellistart.interviewplanning.model.Booking;
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@JsonInclude(Include.NON_EMPTY)
 public class InterviewerTimeSlot {
 
   @Id
@@ -45,7 +45,7 @@ public class InterviewerTimeSlot {
   @Column(name = "\"to\"")
   private LocalTime to;
   @Enumerated(EnumType.STRING)
-  private DayOfWeek dayOfWeek;
+  private InterviewDayOfWeek dayOfWeek;
   private Integer weekNum;
   @Enumerated(EnumType.STRING)
   @JsonIgnore

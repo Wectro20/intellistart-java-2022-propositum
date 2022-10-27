@@ -6,7 +6,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFou
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
@@ -63,7 +63,7 @@ public class InterviewerTimeSlotServiceTest {
     TIME_SLOT = InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))
         .to(LocalTime.of(11, 30))
-        .dayOfWeek(DayOfWeek.MONDAY)
+        .dayOfWeek(InterviewDayOfWeek.MONDAY)
         .weekNum(15)
         .bookings(Collections.emptyList())
         .build();

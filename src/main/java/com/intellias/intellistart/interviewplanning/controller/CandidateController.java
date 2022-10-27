@@ -48,20 +48,20 @@ public class CandidateController {
    */
   @JsonView({Views.Public.class})
   @PostMapping("current/slots")
+  @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<CandidateTimeSlot> createSlot(
       @RequestBody CandidateTimeSlot timeSlotRequest) throws RuntimeException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String currentEmail = authentication.getName();
-
-    CandidateTimeSlot timeSlotResponse = candidateService.createSlot(currentEmail,
+    SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+    CandidateTimeSlot timeSlotResponse = candidateService.createSlot(principal.getEmail(),
         timeSlotRequest.getDate(),
         timeSlotRequest.getFrom(), timeSlotRequest.getTo());
-
     return new ResponseEntity<>(timeSlotResponse, HttpStatus.CREATED);
   }
 
   /**
    * Create time slot for Candidate.
+   *
    * @return response entity for candidate`s time slot and Http.Status.OK
    */
   // TODO: set path to "/candidate/{candidateEmail}/slots" after integrating OAuth2
@@ -69,7 +69,8 @@ public class CandidateController {
   @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<List<CandidateTimeSlot>> getSlots() {
     LOGGER.info("Successfully gave candidate slots");
-    SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
     return new ResponseEntity<>(candidateService.getTimeSlots(principal.getEmail()), HttpStatus.OK);
   }
 
@@ -81,6 +82,7 @@ public class CandidateController {
    * @return response entity for candidate`s time slot and Http.Status.OK
    */
   @PutMapping(path = "current/slots/{slotId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<CandidateTimeSlot> updateSlot(
       @PathVariable("slotId") final long id,
       @RequestBody final CandidateTimeSlot candidateTimeSlot) {

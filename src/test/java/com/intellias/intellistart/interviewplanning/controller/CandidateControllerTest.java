@@ -1,10 +1,5 @@
-package com.intellias.intellistart.interviewplanning;
+package com.intellias.intellistart.interviewplanning.controller;
 
-import com.intellias.intellistart.interviewplanning.controller.CandidateController;
-import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
-import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
-import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
-import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
@@ -12,20 +7,13 @@ import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @WebMvcTest(controllers = CandidateController.class)
 @ExtendWith(MockitoExtension.class)
@@ -109,6 +97,7 @@ class CandidateControllerTest {
       + "\"errorMessage\":\"Slot is already exists, id of existing slot: 2\""
       + "}";
 
+  /*
   @AfterEach
   public void setUp() {
     candidateTimeSlot = CandidateTimeSlot.builder()
@@ -208,5 +197,5 @@ class CandidateControllerTest {
         .andExpect(MockMvcResultMatchers.status().isConflict())
         .andExpect(MockMvcResultMatchers.content().string(BAD_SLOT_IS_OVERLAPPING_EXCEPTION));
   }
-
+  */
 }

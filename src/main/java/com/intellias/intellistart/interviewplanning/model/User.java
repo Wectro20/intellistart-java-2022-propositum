@@ -28,6 +28,11 @@ public class User {
   @Enumerated(EnumType.STRING)
   private UserRole role;
 
+  public User(String email, UserRole role) {
+    this.email = email;
+    this.role = role;
+  }
+
   /**
    * User Role enum.
    */

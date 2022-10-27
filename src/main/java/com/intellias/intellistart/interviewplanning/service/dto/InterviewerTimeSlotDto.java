@@ -3,7 +3,7 @@ package com.intellias.intellistart.interviewplanning.service.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ public class InterviewerTimeSlotDto {
   private LocalTime from;
   @JsonFormat(pattern = "HH:mm")
   private LocalTime to;
-  private DayOfWeek dayOfWeek;
+  private InterviewDayOfWeek dayOfWeek;
   private Integer weekNum;
   private List<BookingDto> bookings;
 

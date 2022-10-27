@@ -7,7 +7,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyE
 import com.intellias.intellistart.interviewplanning.exceptions.BookingValidationException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.BookingRepository;
@@ -178,7 +178,7 @@ public class BookingServiceTest {
     return InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))
         .to(LocalTime.of(11, 30))
-        .dayOfWeek(DayOfWeek.MONDAY)
+        .dayOfWeek(InterviewDayOfWeek.MONDAY)
         .weekNum(15)
         .bookings(Collections.emptyList())
         .build();

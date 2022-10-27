@@ -1,0 +1,265 @@
+{
+  "interviewersTimeSlots": [
+    {
+      "id": 1,
+      "weekNum": 44,
+      "dayOfWeek": "MONDAY",
+      "from": "10:30",
+      "to": "19:00",
+      "user": {
+        "email": "interviewer1@test.com"
+      },
+      "bookings": []
+    },
+    {
+      "id": 2,
+      "weekNum": 44,
+      "dayOfWeek": "TUESDAY",
+      "from": "13:30",
+      "to": "19:00",
+      "user": {
+        "email": "interviewer2@test.com"
+      },
+      "bookings": [
+        {
+          "id" : 8,
+          "interviewerTimeSlot": {
+            "id": 2
+          },
+          "candidateTimeSlot": {
+            "id": 2
+          },
+          "startTime": "15:30",
+          "endTime": "17:00",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        },
+        {
+          "id" : 9,
+          "interviewerTimeSlot": {
+            "id": 2
+          },
+          "candidateTimeSlot": {
+            "id": 2
+          },
+          "startTime": "17:00",
+          "endTime": "18:30",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "weekNum": 44,
+      "dayOfWeek": "WEDNESDAY",
+      "from": "10:30",
+      "to": "18:30",
+      "user": {
+        "email": "interviewer3@test.com"
+      },
+      "bookings": [
+        {
+          "id" : 2,
+          "interviewerTimeSlot": {
+            "id": 3
+          },
+          "candidateTimeSlot": {
+            "id": 3
+          },
+          "startTime": "15:30",
+          "endTime": "17:00",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "weekNum": 44,
+      "dayOfWeek": "THURSDAY",
+      "from": "10:30",
+      "to": "19:00",
+      "user": {
+        "email": "interviewer4@test.com"
+      },
+      "bookings": [
+        {
+          "id" : 4,
+          "interviewerTimeSlot": {
+            "id": 4
+          },
+          "candidateTimeSlot": {
+            "id": 4
+          },
+          "startTime": "10:30",
+          "endTime": "12:00",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "weekNum": 44,
+      "dayOfWeek": "FRIDAY",
+      "from": "15:30",
+      "to": "19:30",
+      "user": {
+        "email": "interviewer5@test.com"
+      },
+      "bookings": [
+      {
+        "id" : 6,
+        "interviewerTimeSlot": {
+          "id": 5
+        },
+        "candidateTimeSlot": {
+          "id": 5
+        },
+        "startTime": "15:30",
+        "endTime": "17:00",
+        "subject": "Interview",
+        "description": "Interview for candidate"
+      },
+        {
+          "id" : 5,
+          "interviewerTimeSlot": {
+            "id": 5
+          },
+          "candidateTimeSlot": {
+            "id": 5
+          },
+          "startTime": "17:00",
+          "endTime": "18:30",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+    ]
+    }
+  ],
+  "candidatesTimeSlots": [
+    {
+      "id": 1,
+      "date": "2022-10-24",
+      "from": "10:30",
+      "to": "19:00",
+      "email": "candidate1@test.com",
+      "bookings": []
+    },
+    {
+      "id": 2,
+      "date": "2022-10-25",
+      "from": "13:30",
+      "to": "19:00",
+      "email": "candidate2@test.com",
+      "bookings": [
+        {
+          "id" : 8,
+          "interviewerTimeSlot": {
+            "id": 2
+          },
+          "candidateTimeSlot": {
+            "id": 2
+          },
+          "startTime": "15:30",
+          "endTime": "17:00",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        },
+        {
+          "id" : 9,
+          "startTime": "17:00",
+          "endTime": "18:30",
+          "interviewerTimeSlot": {
+            "id": 2
+          },
+          "candidateTimeSlot": {
+            "id": 2
+          },
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "date": "2022-10-26",
+      "from": "10:30",
+      "to": "18:30",
+      "email": "candidate3@test.com",
+      "bookings": [
+        {
+          "id" : 2,
+          "interviewerTimeSlot": {
+            "id": 3
+          },
+          "candidateTimeSlot": {
+            "id": 3
+          },
+          "startTime": "15:30",
+          "endTime": "17:00",
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "date": "2022-10-27",
+      "from": "10:30",
+      "to": "19:00",
+      "email": "candidate4@test.com",
+      "bookings": [
+        {
+          "id" : 4,
+          "startTime": "10:30",
+          "endTime": "12:00",
+          "interviewerTimeSlot": {
+            "id": 4
+          },
+          "candidateTimeSlot": {
+            "id": 4
+          },
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "date": "2022-10-28",
+      "from": "15:30",
+      "to": "19:30",
+      "email": "candidate5@test.com",
+      "bookings": [
+        {
+          "id" : 6,
+          "startTime": "15:30",
+          "endTime": "17:00",
+          "interviewerTimeSlot": {
+            "id": 5
+          },
+          "candidateTimeSlot": {
+            "id": 5
+          },
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        },
+        {
+          "id" : 5,
+          "startTime": "17:00",
+          "endTime": "18:30",
+          "interviewerTimeSlot": {
+            "id": 5
+          },
+          "candidateTimeSlot": {
+            "id": 5
+          },
+          "subject": "Interview",
+          "description": "Interview for candidate"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 package com.intellias.intellistart.interviewplanning.exceptions;
 
-import com.intellias.intellistart.interviewplanning.model.DayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -114,8 +114,8 @@ public class ApplicationExceptionHandler {
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidDayOfWeekException.class)
   public ErrorResponse handleInvalidDayOfWeekException() {
-    String errorMessage = "Possible values: " + Arrays.stream(DayOfWeek.values())
-        .map(DayOfWeek::getValue)
+    String errorMessage = "Possible values: " + Arrays.stream(InterviewDayOfWeek.values())
+        .map(InterviewDayOfWeek::getValue)
         .collect(Collectors.toList());
     return new ErrorResponse(INVALID_DAY_OF_WEEK, errorMessage);
   }

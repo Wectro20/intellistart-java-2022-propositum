@@ -37,7 +37,7 @@ public class CandidateTimeSlotService {
    */
   // TODO: Refactor class, don't need User Validation anymore
   public CandidateTimeSlot createSlot(String candidateEmail, LocalDate date,
-                                      LocalTime from, LocalTime to) {
+      LocalTime from, LocalTime to) {
     validateTimeSlot(date, from, to);
     return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
         .date(date)

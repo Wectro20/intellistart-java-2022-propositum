@@ -2,6 +2,7 @@ package com.intellias.intellistart.interviewplanning.service;
 
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
+import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,10 +37,11 @@ public class CandidateTimeSlotService {
    * @param to             end time of time slot
    * @return candidate time slot
    */
-  // TODO: Refactor class, don't need User Validation anymore
+
   public CandidateTimeSlot createSlot(String candidateEmail, LocalDate date,
       LocalTime from, LocalTime to) {
     validateTimeSlot(date, from, to);
+    validateSlotIsNotOverlapping(candidateEmail, date, from, to);
     return candidateTimeSlotRepository.save(CandidateTimeSlot.builder()
         .date(date)
         .from(from)
@@ -112,9 +115,9 @@ public class CandidateTimeSlotService {
       throw new InvalidTimeSlotBoundariesException(start + "; " + end);
     }
   }
-  /*
   /**
-   * Validate candidate for time slot.
+
+   * Validate slot is not overlaps with other time slots.
    *
    * @param candidateEmail email of candidate
    * @param date           available date for time slot
@@ -122,27 +125,23 @@ public class CandidateTimeSlotService {
    * @param end            end time of time slot
    * @return candidate
    */
-  // TODO: Check if this functionality is required
-  /*
-  private User validateCandidate(String candidateEmail, LocalDate date, LocalTime start,
-      LocalTime end) {
-    Optional<User> optionalCandidate = userRepository.findByEmail(candidateEmail);
-    User candidate = optionalCandidate.orElseThrow(
-        () -> new UserNotFoundException(candidateEmail));
+  // TODO: Implement necessary validation of time slot overlapping logic
 
-    Optional<CandidateTimeSlot> overlappingSlot = candidateTimeSlotRepository.findByUserId(
-            candidate.getId())
-        .stream()
-        .filter(candidateTimeSlot -> candidateTimeSlot.getDate().equals(date)
-            &&
-            candidateTimeSlot.getFrom().equals(start) && candidateTimeSlot.getTo().equals(end))
-        .findAny();
+  private boolean validateSlotIsNotOverlapping(String candidateEmail,
+                                               LocalDate date, LocalTime start, LocalTime end) {
+    List<CandidateTimeSlot> slotList = candidateTimeSlotRepository.findByEmail(candidateEmail);
+
+    Optional<CandidateTimeSlot> overlappingSlot = slotList
+            .stream()
+            .filter(candidateTimeSlot ->
+                    candidateTimeSlot.getDate().equals(date)
+                            && candidateTimeSlot.getFrom().equals(start)
+                            && candidateTimeSlot.getTo().equals(end))
+            .findAny();
 
     if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());
     }
-
-    return candidate;
+    return true;
   }
-   */
 }

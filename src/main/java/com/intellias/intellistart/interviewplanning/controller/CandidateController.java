@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.views.Views;
+import com.intellias.intellistart.interviewplanning.security.config.SimpleUserPrincipal;
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
 import java.util.List;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,29 +48,30 @@ public class CandidateController {
    */
   @JsonView({Views.Public.class})
   @PostMapping("current/slots")
+  @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<CandidateTimeSlot> createSlot(
       @RequestBody CandidateTimeSlot timeSlotRequest) throws RuntimeException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String currentEmail = authentication.getName();
-
-    CandidateTimeSlot timeSlotResponse = candidateService.createSlot(currentEmail,
+    SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+    CandidateTimeSlot timeSlotResponse = candidateService.createSlot(principal.getEmail(),
         timeSlotRequest.getDate(),
         timeSlotRequest.getFrom(), timeSlotRequest.getTo());
-
     return new ResponseEntity<>(timeSlotResponse, HttpStatus.CREATED);
   }
 
   /**
    * Create time slot for Candidate.
    *
-   * @param candidateEmail candidate email
    * @return response entity for candidate`s time slot and Http.Status.OK
    */
   // TODO: set path to "/candidate/{candidateEmail}/slots" after integrating OAuth2
-  @GetMapping("/{candidateEmail}/slots")
-  public ResponseEntity<List<CandidateTimeSlot>> getSlots(@PathVariable String candidateEmail) {
+  @GetMapping("/current/slots")
+  @PreAuthorize("hasAuthority('CANDIDATE')")
+  public ResponseEntity<List<CandidateTimeSlot>> getSlots() {
     LOGGER.info("Successfully gave candidate slots");
-    return new ResponseEntity<>(candidateService.getTimeSlots(candidateEmail), HttpStatus.OK);
+    SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+    return new ResponseEntity<>(candidateService.getTimeSlots(principal.getEmail()), HttpStatus.OK);
   }
 
   /**
@@ -79,6 +82,7 @@ public class CandidateController {
    * @return response entity for candidate`s time slot and Http.Status.OK
    */
   @PutMapping(path = "current/slots/{slotId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<CandidateTimeSlot> updateSlot(
       @PathVariable("slotId") final long id,
       @RequestBody final CandidateTimeSlot candidateTimeSlot) {

@@ -7,10 +7,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBo
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
-import com.intellias.intellistart.interviewplanning.model.Booking;
-import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
-import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
-import com.intellias.intellistart.interviewplanning.model.User;
+import com.intellias.intellistart.interviewplanning.model.*;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
@@ -42,6 +39,7 @@ public class InterviewerTimeSlotService {
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
   private GetWeekNumberService weekService;
   private TimeSlotValidationService timeSlotValidationService;
+  private GetWeekNumberService getWeekNumberService = new GetWeekNumberService();
 
   /**
    * Create time slot for Interviewer.
@@ -168,6 +166,11 @@ public class InterviewerTimeSlotService {
     interviewerTimeSlot.setId(slotId);
     interviewerTimeSlot.setUser(user);
     return interviewerTimeSlotRepository.save(interviewerTimeSlot);
+  }
+
+  public BookingLimit setBookingLimit(Integer interviewerId, Integer bookingLimit) {
+    int weekNum = getWeekNumberService.getNextWeekNumber().getWeekNum();
+
   }
 
   private void validateWeekNumber(Integer weekNum) {

@@ -21,8 +21,12 @@ public class BookingLimit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @OneToOne
   private User user;
+
+  private int weekNum;
+
   @Column(name = "max_limit_per_week")
-  private int maxLimitPerWeek;
+  private int bookingLimit;
 }

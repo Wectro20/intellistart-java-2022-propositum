@@ -1,5 +1,6 @@
 package com.intellias.intellistart.interviewplanning.security.authentication.facebook;
 
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidAccessTokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -30,7 +31,12 @@ public class Facebook {
    * @return Profile, which contains userEmail and name;
    */
   public Profile getProfile(String accessToken) {
-    return restTemplate.getForObject(
-        GRAPH_API_BASE_URL + GRAPH_API_BASE_REQUEST + accessToken, Profile.class);
+    try {
+      return restTemplate.getForObject(
+          GRAPH_API_BASE_URL + GRAPH_API_BASE_REQUEST + accessToken, Profile.class);
+    } catch (Exception e) {
+      throw new InvalidAccessTokenException(
+          "Invalid OAuth access token - Cannot parse access token");
+    }
   }
 }

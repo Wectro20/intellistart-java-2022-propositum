@@ -1,9 +1,6 @@
 package com.intellias.intellistart.interviewplanning.service;
 
-import static java.time.temporal.ChronoUnit.MINUTES;
-
 import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
-import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
@@ -16,16 +13,13 @@ import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
-import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 /**

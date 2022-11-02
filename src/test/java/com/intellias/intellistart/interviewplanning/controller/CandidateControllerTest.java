@@ -1,34 +1,54 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
+import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
+import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
+import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
+import com.intellias.intellistart.interviewplanning.security.config.JwtRequestFilter;
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.context.WebApplicationContext;
 
-@WebMvcTest(controllers = CandidateController.class)
-@ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = InterviewPlanningApplication.class)
+@ActiveProfiles("test")
 class CandidateControllerTest {
 
   @MockBean
   private CandidateTimeSlotService candidateTimeSlotService;
 
   @Autowired
+  private WebApplicationContext webappContext;
+
+  @Autowired
+  private JwtRequestFilter jwtRequestFilter;
+
   private MockMvc mockMvc;
 
   private static final String userEmail = "user@gmail.com";
-
-  private static final User user = new User(1L, userEmail, UserRole.CANDIDATE);
 
   private static final String url = "/candidates/current/slots";
 
@@ -97,9 +117,16 @@ class CandidateControllerTest {
       + "\"errorMessage\":\"Slot is already exists, id of existing slot: 2\""
       + "}";
 
-  /*
-  @AfterEach
+  @BeforeEach
   public void setUp() {
+    // to allow all calls to /interviewers/* without any authentication
+    mockMvc = webAppContextSetup(this.webappContext)
+        .addFilter(this.jwtRequestFilter, "/candidates**")
+        .build();
+  }
+
+  @AfterEach
+  public void prepare() {
     candidateTimeSlot = CandidateTimeSlot.builder()
         .date(LocalDate.of(2022, 11, 10))
         .id(2L)
@@ -111,9 +138,10 @@ class CandidateControllerTest {
   }
 
   @Test
-  @WithMockUser(userEmail)
+  @WithUserDetails(userEmail)
   void createCandidateTimeSlot() throws Exception {
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
+    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
+            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
         .thenReturn(candidateTimeSlot);
 
     this.mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -126,10 +154,11 @@ class CandidateControllerTest {
   }
 
   @Test
-  @WithMockUser(userEmail)
+  @WithUserDetails(userEmail)
   void createCandidateTimeSlotWithInvalidDayOfWeekAndThrowException() throws Exception {
     candidateTimeSlot.setDate(LocalDate.of(2022, 11, 12));
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
+    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
+            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
         .thenThrow(InvalidDayOfWeekException.class);
 
     this.mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -141,11 +170,13 @@ class CandidateControllerTest {
   }
 
   @Test
-  @WithMockUser(userEmail)
+  @WithUserDetails(userEmail)
   void createCandidateTimeSlotWithInvalidFromBoundariesAndThrowException() throws Exception {
     candidateTimeSlot.setFrom(LocalTime.of(9, 2));
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
-        .thenThrow(new InvalidTimeSlotBoundariesException(candidateTimeSlot.getFrom() + "; " + candidateTimeSlot.getTo()));
+    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
+            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
+        .thenThrow(new InvalidTimeSlotBoundariesException(
+            candidateTimeSlot.getFrom() + "; " + candidateTimeSlot.getTo()));
 
     this.mockMvc.perform(MockMvcRequestBuilders.post(url)
             .content(BAD_FROM_BOUNDARIES_REQUEST)
@@ -156,11 +187,13 @@ class CandidateControllerTest {
   }
 
   @Test
-  @WithMockUser(userEmail)
+  @WithUserDetails(userEmail)
   void createCandidateTimeSlotWithIntervalLessThanMinAndThrowException() throws Exception {
     candidateTimeSlot.setTo(LocalTime.of(10, 0));
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
-        .thenThrow(new InvalidTimeSlotBoundariesException(candidateTimeSlot.getFrom() + "; " + candidateTimeSlot.getTo()));
+    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
+            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
+        .thenThrow(new InvalidTimeSlotBoundariesException(
+            candidateTimeSlot.getFrom() + "; " + candidateTimeSlot.getTo()));
 
     this.mockMvc.perform(MockMvcRequestBuilders.post(url)
             .content(BAD_FROM_TO_REQUEST)
@@ -171,9 +204,10 @@ class CandidateControllerTest {
   }
 
   @Test
-  @WithMockUser(userEmail)
+  @WithUserDetails(userEmail)
   void createCandidateTimeSlotInvalidUserAndThrowException() throws Exception {
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
+    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
+            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
         .thenThrow(new UserNotFoundException(userEmail));
 
     this.mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -185,9 +219,10 @@ class CandidateControllerTest {
   }
 
   @Test
-  @WithMockUser(userEmail)
+  @WithUserDetails(userEmail)
   void createCandidateTimeSlotWhichOverlappingAndThrowException() throws Exception {
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(), candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
+    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
+            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
         .thenThrow(new SlotIsOverlappingException(candidateTimeSlot.getId()));
 
     this.mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -197,5 +232,5 @@ class CandidateControllerTest {
         .andExpect(MockMvcResultMatchers.status().isConflict())
         .andExpect(MockMvcResultMatchers.content().string(BAD_SLOT_IS_OVERLAPPING_EXCEPTION));
   }
-  */
+
 }

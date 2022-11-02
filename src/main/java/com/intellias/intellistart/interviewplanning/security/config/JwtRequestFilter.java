@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-  private JwtTokenUtil jwtTokenUtil;
+  private final JwtTokenUtil jwtTokenUtil;
 
   @Autowired
   public JwtRequestFilter(JwtTokenUtil jwtTokenUtil) {
@@ -40,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       FilterChain filterChain) throws ServletException, IOException {
     final String requestTokenHeader = request.getHeader("Authorization");
 
-    String jwtToken = null;
+    String jwtToken;
 
     if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer")) {
 
@@ -50,7 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
       if (SecurityContextHolder.getContext().getAuthentication() == null) {
         UserDetails userDetails = new SimpleUserPrincipal(user);
-        if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+        if (Boolean.TRUE.equals(jwtTokenUtil.validateToken(jwtToken, userDetails))) {
           UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
               new UsernamePasswordAuthenticationToken(userDetails, null,
                   userDetails.getAuthorities());

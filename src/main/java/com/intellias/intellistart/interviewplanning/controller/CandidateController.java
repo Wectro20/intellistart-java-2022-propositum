@@ -64,7 +64,6 @@ public class CandidateController {
    *
    * @return response entity for candidate`s time slot and Http.Status.OK
    */
-  // TODO: set path to "/candidate/{candidateEmail}/slots" after integrating OAuth2
   @GetMapping("/current/slots")
   @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<List<CandidateTimeSlot>> getSlots() {

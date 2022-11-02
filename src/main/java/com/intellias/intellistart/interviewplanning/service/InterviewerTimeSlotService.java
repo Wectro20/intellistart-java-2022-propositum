@@ -168,6 +168,9 @@ public class InterviewerTimeSlotService {
   }
 
   public BookingLimit setBookingLimit(Long interviewerId, Integer limitValue) {
+    if (limitValue < 0) {
+      throw new InvalidLimitException("Invalid limit");
+    }
     int weekNum = weekService.getNextWeekNumber().getWeekNum();
 
     User interviewer = userRepository.findById(interviewerId)

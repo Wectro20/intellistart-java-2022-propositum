@@ -102,7 +102,7 @@ public class CandidateTimeSlotService {
 
     if (date.isBefore(LocalDate.now()) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)
         || date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-      throw new InvalidDayOfWeekException(date.toString());
+      throw new InvalidTimeSlotBoundariesException(date.toString() + "is not valid");
     }
 
     if (start.isAfter(LocalTime.of(22, 0)) || start.isBefore(LocalTime.of(8, 0))
@@ -138,7 +138,6 @@ public class CandidateTimeSlotService {
                             && candidateTimeSlot.getFrom().equals(start)
                             && candidateTimeSlot.getTo().equals(end))
             .findAny();
-
     if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());
     }

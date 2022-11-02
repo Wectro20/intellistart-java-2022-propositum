@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookingLimitRepository extends JpaRepository<BookingLimit, Long> {
   Optional<BookingLimit> findByUser(User user);
+
+  Optional<BookingLimit> findByUserAndWeekNum(User user, int weekNum);
 }

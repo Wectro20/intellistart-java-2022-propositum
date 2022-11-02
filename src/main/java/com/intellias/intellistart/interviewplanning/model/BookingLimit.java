@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity(name = "booking_limit")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingLimit {
@@ -25,6 +27,7 @@ public class BookingLimit {
   @OneToOne
   private User user;
 
+  @Column(name = "week_number")
   private int weekNum;
 
   @Column(name = "max_limit_per_week")

@@ -1,5 +1,6 @@
 package com.intellias.intellistart.interviewplanning.service;
 
+
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
@@ -102,7 +103,7 @@ public class CandidateTimeSlotService {
 
     if (date.isBefore(LocalDate.now()) || date.getDayOfWeek().equals(DayOfWeek.SATURDAY)
         || date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-      throw new InvalidTimeSlotBoundariesException(date.toString() + "is not valid");
+      throw new InvalidDayOfWeekException(date.toString());
     }
 
     if (start.isAfter(LocalTime.of(22, 0)) || start.isBefore(LocalTime.of(8, 0))

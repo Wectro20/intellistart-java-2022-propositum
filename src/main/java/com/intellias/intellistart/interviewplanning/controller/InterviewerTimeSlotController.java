@@ -71,10 +71,19 @@ public class InterviewerTimeSlotController {
     return interviewerTimeSlotService.getTimeSlots(interviewerEmail, weekNum);
   }
 
+  /**
+   * Endpoint to set booking limit Interviewer.
+   *
+   * @param interviewerId for which limit to set
+   * @param bookingLimit for define the value of limit
+   *
+   * @return booking limit
+   */
   @PostMapping("/interviewers/{interviewerId}/limit")
   @PreAuthorize("hasAuthority('CANDIDATE')")
   public ResponseEntity<BookingLimit> setBookingLimit(@PathVariable Long interviewerId,
                                                       @RequestParam Integer bookingLimit) {
-    return new ResponseEntity<>(interviewerTimeSlotService.setBookingLimit(interviewerId, bookingLimit), HttpStatus.OK);
+    return new ResponseEntity<>(interviewerTimeSlotService
+            .setBookingLimit(interviewerId, bookingLimit), HttpStatus.OK);
   }
 }

@@ -4,8 +4,8 @@ import static com.intellias.intellistart.interviewplanning.exceptions.Applicatio
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.SUBJECT_DESCRIPTION_NOT_VALID;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
-import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;

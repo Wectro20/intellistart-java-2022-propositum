@@ -41,7 +41,7 @@ public class UserService {
    * @return saved user with role
    */
   public User saveUserWithRole(User user, UserRole role) {
-    if(isEmailNotValid(user.getEmail())) {
+    if (isEmailNotValid(user.getEmail())) {
       throw new ValidationException("email is not valid", EMAIL_NOT_VALID);
     }
 
@@ -68,7 +68,7 @@ public class UserService {
   /**
    * Delete users by role.
    *
-   * @param id to find user
+   * @param id   to find user
    * @param role to filter user by role
    * @return deleted user
    */
@@ -98,7 +98,7 @@ public class UserService {
   }
 
   private boolean isEmailNotValid(String email) {
-    if(email == null) {
+    if (email == null) {
       return true;
     }
 

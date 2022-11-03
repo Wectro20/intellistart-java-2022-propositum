@@ -50,9 +50,9 @@ class AuthenticateControllerTest {
 
   @BeforeEach
   public void setUp() {
-    // to allow all calls to /login without any authentication
+    // to allow all calls to /** without any authentication
     mockMvc = webAppContextSetup(this.webappContext)
-        .addFilter(this.jwtRequestFilter, "/candidates**")
+        .addFilter(this.jwtRequestFilter, "/**")
         .build();
   }
 

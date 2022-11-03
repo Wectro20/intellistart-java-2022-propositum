@@ -8,8 +8,6 @@ import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBo
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
-import com.intellias.intellistart.interviewplanning.model.User;
-import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.security.config.JwtRequestFilter;
 import com.intellias.intellistart.interviewplanning.service.CandidateTimeSlotService;
@@ -119,7 +117,7 @@ class CandidateControllerTest {
 
   @BeforeEach
   public void setUp() {
-    // to allow all calls to /interviewers/* without any authentication
+    // to allow all calls to /candidates/* without any authentication
     mockMvc = webAppContextSetup(this.webappContext)
         .addFilter(this.jwtRequestFilter, "/candidates**")
         .build();

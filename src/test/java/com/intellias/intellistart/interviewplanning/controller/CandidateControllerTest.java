@@ -205,21 +205,6 @@ class CandidateControllerTest {
 
   @Test
   @WithUserDetails(userEmail)
-  void createCandidateTimeSlotInvalidUserAndThrowException() throws Exception {
-    Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
-            candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))
-        .thenThrow(new UserNotFoundException(userEmail));
-
-    this.mockMvc.perform(MockMvcRequestBuilders.post(url)
-            .content(RIGHT_REQUEST)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isNotFound())
-        .andExpect(MockMvcResultMatchers.content().string(BAD_USER_NOT_FOUND_EXCEPTION));
-  }
-
-  @Test
-  @WithUserDetails(userEmail)
   void createCandidateTimeSlotWhichOverlappingAndThrowException() throws Exception {
     Mockito.when(candidateTimeSlotService.createSlot(userEmail, candidateTimeSlot.getDate(),
             candidateTimeSlot.getFrom(), candidateTimeSlot.getTo()))

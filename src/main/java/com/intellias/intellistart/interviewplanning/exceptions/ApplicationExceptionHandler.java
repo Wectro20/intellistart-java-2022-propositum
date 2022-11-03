@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ApplicationExceptionHandler {
 
   private static final String INTERVIEWER_NOT_FOUND = "interviewer_not_found";
-  private static final String CANDIDATE_NOT_FOUND = "candidate_not_found";
+  private static final String USER_NOT_FOUND = "user_not_found";
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";
   private static final String BOOKING_IS_OVERLAPPING = "booking_is_overlapping";
   public static final String INVALID_BOUNDARIES = "invalid_boundaries";
@@ -27,12 +27,21 @@ public class ApplicationExceptionHandler {
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
   private static final String SLOT_NOT_FOUND = "slot_not_found";
   private static final String WEEK_NUMBER_NOT_ACCEPTABLE = "week_number_not_acceptable";
+  private static final String USER_ALREADY_EXIST = "user_already_exist";
+  public static final String EMAIL_NOT_VALID = "email_not_valid";
 
   @ResponseBody
   @ResponseStatus(value = HttpStatus.CONFLICT)
   @ExceptionHandler(WeekNumberNotAcceptableException.class)
   public ErrorResponse handleWeekNumberNotAcceptableException(WeekNumberNotAcceptableException e) {
     return new ErrorResponse(WEEK_NUMBER_NOT_ACCEPTABLE, e.getMessage());
+  }
+
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.CONFLICT)
+  @ExceptionHandler(UserAlreadyExistsException.class)
+  public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+    return new ErrorResponse(USER_ALREADY_EXIST, e.getMessage());
   }
 
   /**
@@ -52,8 +61,8 @@ public class ApplicationExceptionHandler {
   @ResponseBody
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   @ExceptionHandler(UserNotFoundException.class)
-  public ErrorResponse handleInterviewerNotFoundException(UserNotFoundException e) {
-    return new ErrorResponse(CANDIDATE_NOT_FOUND, e.getMessage());
+  public ErrorResponse handleUserNotFoundException(UserNotFoundException e) {
+    return new ErrorResponse(USER_NOT_FOUND, e.getMessage());
   }
 
   /**
@@ -102,8 +111,8 @@ public class ApplicationExceptionHandler {
    */
   @ResponseBody
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-  @ExceptionHandler(BookingValidationException.class)
-  public ErrorResponse handleBookingValidationException(BookingValidationException e) {
+  @ExceptionHandler(ValidationException.class)
+  public ErrorResponse handleBookingValidationException(ValidationException e) {
     return new ErrorResponse(e.getErrorMessage(), e.getMessage());
   }
 

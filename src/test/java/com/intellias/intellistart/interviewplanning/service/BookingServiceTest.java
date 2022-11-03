@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
-import com.intellias.intellistart.interviewplanning.exceptions.BookingValidationException;
+import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
@@ -149,7 +149,7 @@ public class BookingServiceTest {
     Mockito.when(candidateTimeSlotRepository.findById(1L))
         .thenReturn(Optional.of(CANDIDATE_TIME_SLOT));
 
-    assertThrows(BookingValidationException.class,
+    assertThrows(ValidationException.class,
         () -> bookingService.createBooking(bookingDto));
 
   }

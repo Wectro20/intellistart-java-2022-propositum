@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository;
 /**
  * Its repository for BookingLimit entity.
  */
+
 @Repository
 public interface BookingLimitRepository extends JpaRepository<BookingLimit, Long> {
   Optional<BookingLimit> findByUser(User user);
+
+  void deleteByUser(User user);
 }

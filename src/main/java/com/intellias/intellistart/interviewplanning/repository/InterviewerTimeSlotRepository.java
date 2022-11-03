@@ -16,4 +16,6 @@ public interface InterviewerTimeSlotRepository extends JpaRepository<Interviewer
   List<InterviewerTimeSlot> findAllByUserAndWeekNum(User user, int weekNum);
 
   List<InterviewerTimeSlot> findAllByWeekNum(int weekNum);
+
+  void deleteAllByUser(User user);
 }

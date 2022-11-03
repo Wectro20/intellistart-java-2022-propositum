@@ -53,7 +53,7 @@ public class AuthenticationController {
    */
   @JsonView({Views.Public.class})
   @GetMapping("/me")
-  @PreAuthorize("hasAnyAuthority('COORDINATOR', 'INTERWIEVER')")
+  @PreAuthorize("hasAnyAuthority('COORDINATOR', 'INTERVIEWER')")
   public ResponseEntity<User> getUserInfo() {
     SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
         .getAuthentication()

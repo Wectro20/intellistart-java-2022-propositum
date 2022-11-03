@@ -27,6 +27,7 @@ public class ApplicationExceptionHandler {
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";
   private static final String SLOT_NOT_FOUND = "slot_not_found";
   private static final String WEEK_NUMBER_NOT_ACCEPTABLE = "week_number_not_acceptable";
+  private static final String INVALID_ACCESS_TOKEN = "invalid_access_token";
 
   @ResponseBody
   @ResponseStatus(value = HttpStatus.CONFLICT)
@@ -118,6 +119,17 @@ public class ApplicationExceptionHandler {
         .map(InterviewDayOfWeek::getValue)
         .collect(Collectors.toList());
     return new ErrorResponse(INVALID_DAY_OF_WEEK, errorMessage);
+  }
+
+  /**
+   * Exception handler for InvalidAccessToken.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(InvalidAccessTokenException.class)
+  public ErrorResponse handleInvalidAccessTokenException(
+      InvalidAccessTokenException invalidAccessTokenException) {
+    return new ErrorResponse(INVALID_ACCESS_TOKEN, invalidAccessTokenException.getMessage());
   }
 
   /**

@@ -115,9 +115,9 @@ public class CandidateTimeSlotService {
       throw new InvalidTimeSlotBoundariesException(start + "; " + end);
     }
   }
-  /**
 
-   * Validate slot is not overlaps with other time slots.
+  /**
+   * Validate candidate for time slot.
    *
    * @param candidateEmail email of candidate
    * @param date           available date for time slot
@@ -126,18 +126,17 @@ public class CandidateTimeSlotService {
    * @return candidate
    */
   // TODO: Implement necessary validation of time slot overlapping logic
-
   private boolean validateSlotIsNotOverlapping(String candidateEmail,
-                                               LocalDate date, LocalTime start, LocalTime end) {
+      LocalDate date, LocalTime start, LocalTime end) {
     List<CandidateTimeSlot> slotList = candidateTimeSlotRepository.findByEmail(candidateEmail);
 
     Optional<CandidateTimeSlot> overlappingSlot = slotList
-            .stream()
-            .filter(candidateTimeSlot ->
-                    candidateTimeSlot.getDate().equals(date)
-                            && candidateTimeSlot.getFrom().equals(start)
-                            && candidateTimeSlot.getTo().equals(end))
-            .findAny();
+        .stream()
+        .filter(candidateTimeSlot ->
+            candidateTimeSlot.getDate().equals(date)
+                && candidateTimeSlot.getFrom().equals(start)
+                && candidateTimeSlot.getTo().equals(end))
+        .findAny();
 
     if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());

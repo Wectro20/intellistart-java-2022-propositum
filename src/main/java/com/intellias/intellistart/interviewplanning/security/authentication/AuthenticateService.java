@@ -1,9 +1,11 @@
 package com.intellias.intellistart.interviewplanning.security.authentication;
 
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidAccessTokenException;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Facebook;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.FbAccessToken;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Profile;
 import com.intellias.intellistart.interviewplanning.security.config.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,8 +40,16 @@ public class AuthenticateService {
    */
   public JwtResponse authenticateUser(FbAccessToken fbAccessToken) {
     Profile profile = facebook.getProfile(fbAccessToken.getToken());
+
+    if (profile.getEmail() == null) {
+      throw new InvalidAccessTokenException("User has not register email in Facebook");
+    }
+
     UserDetails userDetails = userDetailsService.loadUserByUsername(profile.getEmail());
+
     String jwtResponseToken = jwtTokenUtil.generateToken(userDetails);
-    return new JwtResponse(jwtResponseToken);
+    Claims userClaims = jwtTokenUtil.getAllClaimsFromToken(jwtResponseToken);
+
+    return new JwtResponse(jwtResponseToken, userClaims);
   }
 }

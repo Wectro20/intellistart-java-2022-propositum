@@ -1,11 +1,12 @@
 package com.intellias.intellistart.interviewplanning.security.config;
 
+import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenUtil {
 
-  private static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+  private static final long JWT_TOKEN_VALIDITY = 5 * (long) 60 * 60;
   @Value("${jwt.secret}")
   private String secret;
 
@@ -59,8 +60,10 @@ public class JwtTokenUtil {
    *
    * @param token jwt access token.
    */
-  private Claims getAllClaimsFromToken(String token) {
-    return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+  public Claims getAllClaimsFromToken(String token) {
+    return
+        Jwts.parserBuilder().setSigningKey(secret.getBytes()).build().parseClaimsJws(token)
+            .getBody();
   }
 
   /**
@@ -82,8 +85,8 @@ public class JwtTokenUtil {
    */
   public User parseTokenToUser(String token) {
     try {
-      Claims claims = Jwts.parser()
-          .setSigningKey(secret)
+      Claims claims = Jwts.parserBuilder()
+          .setSigningKey(secret.getBytes()).build()
           .parseClaimsJws(token)
           .getBody();
 
@@ -91,14 +94,14 @@ public class JwtTokenUtil {
       userFromToken.setEmail(claims.getSubject());
 
       List<Map<String, String>> authorities = (List<Map<String, String>>) claims.get("role");
+
       Map<String, String> mapOfAuthorities = authorities.get(0);
       UserRole role = UserRole.valueOf(mapOfAuthorities.get("authority"));
 
       userFromToken.setRole(role);
       return userFromToken;
     } catch (JwtException | ClassCastException e) {
-      System.out.println("Could not parse token");
-      return null;
+      throw new UserNotFoundException("Could not parse token");
     }
   }
 
@@ -124,7 +127,7 @@ public class JwtTokenUtil {
     return Jwts.builder().setClaims(claims).setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-        .signWith(SignatureAlgorithm.HS512, secret)
+        .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
         .compact();
   }
 

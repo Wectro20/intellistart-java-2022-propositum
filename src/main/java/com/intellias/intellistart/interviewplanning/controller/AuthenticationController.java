@@ -58,6 +58,6 @@ public class AuthenticationController {
     SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
         .getAuthentication()
         .getPrincipal();
-    return ResponseEntity.ok(new User(principal.getEmail(), principal.getRole()));
+    return ResponseEntity.ok(principal.getUser());
   }
 }

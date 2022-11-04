@@ -1,7 +1,6 @@
 package com.intellias.intellistart.interviewplanning.security.config;
 
 import com.intellias.intellistart.interviewplanning.model.User;
-import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import java.util.Collection;
 import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
@@ -59,8 +58,8 @@ public class SimpleUserPrincipal implements UserDetails {
     return true;
   }
 
-  public UserRole getRole() {
-    return user.getRole();
+  public User getUser() {
+    return user;
   }
 }
 

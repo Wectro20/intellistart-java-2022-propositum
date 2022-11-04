@@ -12,6 +12,7 @@ import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.WeekNumber;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
@@ -44,6 +45,9 @@ public class InterviewerTimeSlotServiceTest {
   private InterviewerTimeSlotRepository timeSlotRepository;
 
   @Mock
+  private BookingLimitRepository bookingLimitRepository;
+
+  @Mock
   private UserRepository userRepository;
   @Mock
   private GetWeekNumberService weekService;
@@ -57,8 +61,8 @@ public class InterviewerTimeSlotServiceTest {
 
   @BeforeEach
   public void setUp() {
-    timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION,
-        userRepository, timeSlotRepository, weekService, timeSlotValidationService);
+    timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION, bookingLimitRepository,
+            userRepository, timeSlotRepository, weekService, timeSlotValidationService);
 
     TIME_SLOT = InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))

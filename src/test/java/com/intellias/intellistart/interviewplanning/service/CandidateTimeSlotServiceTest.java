@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidDayOfWeekException;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
-import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;

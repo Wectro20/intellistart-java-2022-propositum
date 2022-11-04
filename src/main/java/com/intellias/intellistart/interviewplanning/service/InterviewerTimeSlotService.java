@@ -1,14 +1,19 @@
 package com.intellias.intellistart.interviewplanning.service;
 
+
 import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.InvalidLimitException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
+import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
@@ -17,6 +22,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +37,8 @@ public class InterviewerTimeSlotService {
 
   @Value("${interview.duration_minutes}")
   private Integer interviewDuration;
+
+  private BookingLimitRepository bookingLimitRepository;
 
   private UserRepository userRepository;
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
@@ -162,6 +170,39 @@ public class InterviewerTimeSlotService {
     interviewerTimeSlot.setId(slotId);
     interviewerTimeSlot.setUser(user);
     return interviewerTimeSlotRepository.save(interviewerTimeSlot);
+  }
+
+  /**
+   * Get time slot for Interviewer.
+   *
+   * @param interviewerId    for getting interviewer id
+   * @param limitValue for setting booking limit
+   * @return booking limit
+   */
+  public BookingLimit setBookingLimit(Long interviewerId, Integer limitValue) {
+    if (limitValue < 0) {
+      throw new InvalidLimitException("Invalid limit");
+    }
+    int weekNum = weekService.getNextWeekNumber().getWeekNum();
+
+    User interviewer = userRepository.findById(interviewerId)
+            .orElseThrow(() -> new UserNotFoundException("Invalid User id: " + interviewerId));
+
+    Optional<BookingLimit> bookingLimitOptional = bookingLimitRepository
+            .findByUserAndWeekNum(interviewer, weekNum);
+
+    BookingLimit bookingLimit;
+    if (bookingLimitOptional.isEmpty()) {
+      bookingLimit = BookingLimit.builder()
+              .bookingLimit(limitValue)
+              .weekNum(weekNum)
+              .user(interviewer)
+              .build();
+    } else {
+      bookingLimit = bookingLimitOptional.get();
+      bookingLimit.setBookingLimit(limitValue);
+    }
+    return bookingLimitRepository.save(bookingLimit);
   }
 
   private void validateWeekNumber(Integer weekNum) {

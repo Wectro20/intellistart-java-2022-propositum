@@ -1,11 +1,14 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
+import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.service.InterviewerTimeSlotService;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +41,6 @@ public class InterviewerTimeSlotController {
     return interviewerTimeSlotService.createSlot(interviewerEmail, interviewerTimeSlot);
   }
 
-
   /**
    * Endpoint to update time slot for Interviewer.
    *
@@ -67,5 +69,21 @@ public class InterviewerTimeSlotController {
   public List<InterviewerTimeSlotDto> getSlot(@PathVariable String interviewerEmail,
       @RequestParam int weekNum) {
     return interviewerTimeSlotService.getTimeSlots(interviewerEmail, weekNum);
+  }
+
+  /**
+   * Endpoint to set booking limit Interviewer.
+   *
+   * @param interviewerId for which limit to set
+   * @param bookingLimit for define the value of limit
+   *
+   * @return booking limit
+   */
+  @PostMapping("/interviewers/{interviewerId}/limit")
+  @PreAuthorize("hasAuthority('CANDIDATE')")
+  public ResponseEntity<BookingLimit> setBookingLimit(@PathVariable Long interviewerId,
+                                                      @RequestParam Integer bookingLimit) {
+    return new ResponseEntity<>(interviewerTimeSlotService
+            .setBookingLimit(interviewerId, bookingLimit), HttpStatus.OK);
   }
 }

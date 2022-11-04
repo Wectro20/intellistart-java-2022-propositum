@@ -25,10 +25,11 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonView(Views.Internal.class)
   private Long id;
-
   @JsonView(Views.Public.class)
   private String email;
+  @JsonView(Views.Public.class)
   @Enumerated(EnumType.STRING)
   private UserRole role;
 

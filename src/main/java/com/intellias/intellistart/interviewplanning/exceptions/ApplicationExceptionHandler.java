@@ -29,6 +29,7 @@ public class ApplicationExceptionHandler {
   private static final String WEEK_NUMBER_NOT_ACCEPTABLE = "week_number_not_acceptable";
   private static final String USER_ALREADY_EXIST = "user_already_exist";
   public static final String EMAIL_NOT_VALID = "email_not_valid";
+  private static final String INVALID_LIMIT = "invalid_limit";
   private static final String INVALID_ACCESS_TOKEN = "invalid_access_token";
 
   @ResponseBody
@@ -84,6 +85,16 @@ public class ApplicationExceptionHandler {
   @ExceptionHandler(BookingIsAlreadyExistsException.class)
   public ErrorResponse handleBookingIsAlreadyExistsException(BookingIsAlreadyExistsException e) {
     return new ErrorResponse(BOOKING_IS_OVERLAPPING, e.getMessage());
+  }
+
+  /**
+   * Exception handler for InvalidLimitException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(InvalidLimitException.class)
+  public ErrorResponse handleInvalidLimitException(InvalidLimitException e) {
+    return new ErrorResponse(INVALID_LIMIT, e.getMessage());
   }
 
   /**

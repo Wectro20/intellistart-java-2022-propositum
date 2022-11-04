@@ -1,5 +1,7 @@
 package com.intellias.intellistart.interviewplanning.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.intellias.intellistart.interviewplanning.model.views.Views;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,8 +25,11 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonView(Views.Internal.class)
   private Long id;
+  @JsonView(Views.Public.class)
   private String email;
+  @JsonView(Views.Public.class)
   @Enumerated(EnumType.STRING)
   private UserRole role;
 

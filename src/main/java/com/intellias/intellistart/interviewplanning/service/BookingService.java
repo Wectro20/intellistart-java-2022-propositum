@@ -4,8 +4,8 @@ import static com.intellias.intellistart.interviewplanning.exceptions.Applicatio
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.SUBJECT_DESCRIPTION_NOT_VALID;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
-import com.intellias.intellistart.interviewplanning.exceptions.BookingValidationException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
@@ -78,17 +78,17 @@ public class BookingService {
       log.error("From/to does not fit into interviewer slot range {} - {}",
           interviewerTimeSlot.getFrom(), interviewerTimeSlot.getTo());
 
-      throw new BookingValidationException("from/to does not fit into interviewer time slot",
+      throw new ValidationException("from/to does not fit into interviewer time slot",
           INVALID_BOUNDARIES);
     }
 
     if (bookingDto.getSubject().length() > subjectLength) {
-      throw new BookingValidationException("subject max length is " + subjectLength + " chars",
+      throw new ValidationException("subject max length is " + subjectLength + " chars",
           SUBJECT_DESCRIPTION_NOT_VALID);
     }
 
     if (bookingDto.getDescription().length() > descriptionLength) {
-      throw new BookingValidationException(
+      throw new ValidationException(
           "description max length is " + descriptionLength + " chars",
           SUBJECT_DESCRIPTION_NOT_VALID);
     }

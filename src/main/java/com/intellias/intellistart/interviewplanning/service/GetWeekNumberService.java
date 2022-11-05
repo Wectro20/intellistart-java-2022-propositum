@@ -1,15 +1,12 @@
 package com.intellias.intellistart.interviewplanning.service;
 
 import com.intellias.intellistart.interviewplanning.model.WeekNumber;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
-import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 

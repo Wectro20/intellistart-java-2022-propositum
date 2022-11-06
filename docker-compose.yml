@@ -7,21 +7,23 @@ services:
     cap_add:
       - SYS_NICE
     restart: always
-    env_file: ./.env
+    env_file: .env
     environment:
       - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
       - MYSQL_DATABASE=$MYSQLDB_DATABASE
     volumes:
-      - ./dbdata:/var/lib/mysql
+      - ./data/dbdata:/var/lib/mysql
     ports:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
 
   app:
     depends_on:
       - db
-    build: ./../../intellistart-java-2022-propositum
+    build: .
+    image: spring-application
+    container_name: spring-application
     restart: on-failure
-    env_file: ./.env
+    env_file: .env
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
     environment:
@@ -40,7 +42,7 @@ services:
           "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver"
         }'
     volumes:
-      - .m2:/root/.m2
+      - ./data/.m2:/root/.m2
     stdin_open: true
     tty: true
 

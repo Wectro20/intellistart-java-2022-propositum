@@ -46,14 +46,15 @@ public class AuthenticationController {
 
 
   /**
-   * Return user email and role only for coordinator and interviewer. If user has not granted role
-   * CustomAccessDeniedHandler called and send user error message with status forbidden.
+   * Return user email and role only for coordinator, interviewer and candidate. If user has not
+   * granted role CustomAccessDeniedHandler called and send user error message
+   * with status forbidden.
    *
    * @return User info.
    */
   @JsonView({Views.Public.class})
   @GetMapping("/me")
-  @PreAuthorize("hasAnyAuthority('COORDINATOR', 'INTERVIEWER')")
+  @PreAuthorize("hasAnyAuthority('CANDIDATE','COORDINATOR', 'INTERVIEWER')")
   public ResponseEntity<User> getUserInfo() {
     SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
         .getAuthentication()

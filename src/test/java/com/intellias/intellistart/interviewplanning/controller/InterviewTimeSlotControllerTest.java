@@ -15,6 +15,7 @@ import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
+import com.intellias.intellistart.interviewplanning.security.config.JwtRequestFilter;
 import com.intellias.intellistart.interviewplanning.service.GetWeekNumberService;
 import java.time.LocalTime;
 import java.util.Collections;
@@ -32,6 +33,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -82,20 +85,23 @@ public class InterviewTimeSlotControllerTest {
   private GetWeekNumberService weekNumberService;
 
   @Autowired
-  private FilterChainProxy springSecurityFilter;
+  private JwtRequestFilter jwtRequestFilter;
 
   @Autowired
   private WebApplicationContext webappContext;
 
   @BeforeEach
   public void setUp() {
-    // to allow all calls to /interviewers/* without any authentication
+    // to allow all calls to /candidates/* without any authentication
     mockMvc = webAppContextSetup(this.webappContext)
-        .addFilter(this.springSecurityFilter, "/interviewers**")
+        .addFilter(this.jwtRequestFilter, "/interviewers**")
         .build();
+
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
   }
 
   @Test
+  @WithUserDetails(value = EMAIL, setupBefore = TestExecutionEvent.TEST_EXECUTION)
   public void createSlot_Should_RespondWithSavedTimeSlot() throws Exception {
     String requestJson = FileTestUtils.readFile(CREATE_SLOT_REQ_PATH);
 
@@ -115,7 +121,7 @@ public class InterviewTimeSlotControllerTest {
         .thenReturn(Collections.emptyList());
     Mockito.when(timeSlotRepository.save(Mockito.any())).thenReturn(expectedSlot);
 
-    mockMvc.perform(post("/interviewers/" + EMAIL + "/slots")
+    mockMvc.perform(post("/interviewers/slots")
             .content(requestJson)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -132,6 +138,7 @@ public class InterviewTimeSlotControllerTest {
   }
 
   @Test
+  @WithUserDetails(value = EMAIL, setupBefore = TestExecutionEvent.TEST_EXECUTION)
   public void createSlot_When_ToIsNotPresented_Should_UpdateToAndRespondWithSavedTimeSlot()
       throws Exception {
     String requestJson = FileTestUtils.readFile(CREATE_SLOT_NO_TO_FIELD_REQ_PATH);
@@ -154,7 +161,7 @@ public class InterviewTimeSlotControllerTest {
 
     Mockito.when(timeSlotRepository.save(Mockito.any())).thenReturn(expectedSlot);
 
-    mockMvc.perform(post("/interviewers/" + EMAIL + "/slots")
+    mockMvc.perform(post("/interviewers/slots")
             .content(requestJson)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -171,6 +178,7 @@ public class InterviewTimeSlotControllerTest {
   }
 
   @Test
+  @WithUserDetails(value = EMAIL, setupBefore = TestExecutionEvent.TEST_EXECUTION)
   public void createSlot_When_RangeIsShorterInterviewDuration_Should_ReturnErrorResponse()
       throws Exception {
     String requestJson = FileTestUtils.readFile(CREATE_SLOT_SHORT_RANGE_REQ_PATH);
@@ -182,7 +190,7 @@ public class InterviewTimeSlotControllerTest {
 
     requestJson = objectMapper.writeValueAsString(requestSlot);
 
-    mockMvc.perform(post("/interviewers/" + EMAIL + "/slots")
+    mockMvc.perform(post("/interviewers/slots")
             .content(requestJson)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

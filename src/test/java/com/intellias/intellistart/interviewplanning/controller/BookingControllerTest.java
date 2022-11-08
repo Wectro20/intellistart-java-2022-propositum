@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
 import com.intellias.intellistart.interviewplanning.model.Booking;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.User;
+import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.BookingRepository;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.security.config.JwtRequestFilter;
+import com.intellias.intellistart.interviewplanning.security.config.SimpleUserPrincipal;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,6 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -84,6 +90,9 @@ class BookingControllerTest {
       .build();
 
   private static final String POST_BOOKING_URL = "/bookings";
+  private static final String userEmail = "user@gmail.com";
+  private static final User user = new User(userEmail, UserRole.COORDINATOR);
+  private static final UserDetails userDetails = new SimpleUserPrincipal(user);
 
   @BeforeEach
   public void setUp() {
@@ -93,6 +102,7 @@ class BookingControllerTest {
   }
 
   @Test
+  @WithMockUser(authorities = "COORDINATOR")
   void sendPostMethodToCreateBookingAndRetrieveStatusOk() throws Exception {
     Mockito.when(interviewerTimeSlotRepository.findById(1L))
         .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
@@ -104,6 +114,7 @@ class BookingControllerTest {
     String requestBooking = objectMapper.writeValueAsString(BOOKING_DTO);
     String responseBooking = objectMapper.writeValueAsString(BOOKING_DTO);
     this.mockMvc.perform(MockMvcRequestBuilders.post(POST_BOOKING_URL)
+            .with(SecurityMockMvcRequestPostProcessors.user(userDetails))
             .content(requestBooking)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))

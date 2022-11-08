@@ -2,10 +2,7 @@ package com.intellias.intellistart.interviewplanning.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
-import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
-import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
-import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
+import com.intellias.intellistart.interviewplanning.exceptions.*;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
@@ -20,6 +17,8 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotRequestForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +36,12 @@ public class InterviewerTimeSlotServiceTest {
   private static final String EMAIL = "test@.com";
 
   private static InterviewerTimeSlot TIME_SLOT;
+
+  private static InterviewerTimeSlotRequestForm TIME_SLOT_REQUEST_FORM;
+
+  private static InterviewerTimeSlot TIME_SLOT_FOR_UPDATE;
+
+  private static final Long SLOT_ID = 1L;
 
 
   private static final User USER = new User(1L, EMAIL, UserRole.INTERVIEWER);
@@ -70,10 +75,30 @@ public class InterviewerTimeSlotServiceTest {
         .dayOfWeek(InterviewDayOfWeek.MONDAY)
         .weekNum(15)
         .bookings(Collections.emptyList())
+        .user(USER)
         .build();
+
+
+    TIME_SLOT_REQUEST_FORM = InterviewerTimeSlotRequestForm.builder()
+            .from(LocalTime.of(10, 0))
+            .to(LocalTime.of(11, 30))
+            .dayOfWeek(InterviewDayOfWeek.MONDAY)
+            .weekNum(15)
+            .build();
+
+
+    TIME_SLOT_FOR_UPDATE = InterviewerTimeSlot.builder()
+            .from(LocalTime.of(12, 0))
+            .to(LocalTime.of(13, 30))
+            .dayOfWeek(InterviewDayOfWeek.TUESDAY)
+            .weekNum(15)
+            .bookings(Collections.emptyList())
+            .user(USER)
+            .build();
 
     Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(15));
   }
+
 
   @Test
   public void createSlot_Should_SuccessfullyCreateSlotAndSave() {
@@ -137,6 +162,46 @@ public class InterviewerTimeSlotServiceTest {
         () -> timeSlotService.createSlot(EMAIL, TIME_SLOT));
 
   }
+
+  @Test
+  public void updateSlot_Should_SuccessfullyUpdateSlot() {
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
+    Mockito.when(timeSlotRepository.findById(SLOT_ID)).thenReturn(Optional.of(TIME_SLOT_FOR_UPDATE));
+    timeSlotService.updateSlot(EMAIL, SLOT_ID, TIME_SLOT_REQUEST_FORM);
+
+
+    Mockito.verify(timeSlotRepository, Mockito.times(1))
+            .save(timeSlotArgumentCaptor.capture());
+
+    InterviewerTimeSlot actualTimeSlot = timeSlotArgumentCaptor.getValue();
+
+    assertEquals(TIME_SLOT.getFrom(), actualTimeSlot.getFrom());
+    assertEquals(TIME_SLOT.getTo(), actualTimeSlot.getTo());
+    assertEquals(TIME_SLOT.getWeekNum(), actualTimeSlot.getWeekNum());
+    assertEquals(TIME_SLOT.getDayOfWeek(), actualTimeSlot.getDayOfWeek());
+    assertEquals(TIME_SLOT.getStatus(), actualTimeSlot.getStatus());
+    assertEquals(USER, actualTimeSlot.getUser());
+  }
+
+
+  @Test
+  public void updateSlot_WhenSlotNotFound_Should_ThrowException() {
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
+    Mockito.when(timeSlotRepository.findById(SLOT_ID)).thenReturn(Optional.empty());
+
+    assertThrows(SlotNotFoundException.class,
+            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID ,TIME_SLOT_REQUEST_FORM));
+  }
+
+
+  @Test
+  public void updateSlot_WhenWeekNumberNotAcceptable_Should_ThrowException() {
+    TIME_SLOT_REQUEST_FORM.setWeekNum(14);
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
+    assertThrows(WeekNumberNotAcceptableException.class,
+            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID , TIME_SLOT_REQUEST_FORM));
+  }
+
 
   @Test
   public void getTimeSlots_When_WeekNumberIsNotCurrent_Should_ThrowException() {

@@ -1,14 +1,18 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
+import com.intellias.intellistart.interviewplanning.exceptions.PermissionDenied;
 import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.security.config.SimpleUserPrincipal;
 import com.intellias.intellistart.interviewplanning.service.InterviewerTimeSlotService;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotRequestForm;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,10 +55,17 @@ public class InterviewerTimeSlotController {
    * @return updated interviewer time slot
    */
   @PostMapping("/interviewers/{interviewerEmail}/slots/{slotId}")
+  @ResponseStatus(HttpStatus.OK)
   public InterviewerTimeSlot updateSlot(@PathVariable String interviewerEmail,
       @PathVariable Long slotId,
-      @RequestBody InterviewerTimeSlot interviewerTimeSlot) {
-    return interviewerTimeSlotService.updateSlot(interviewerEmail, slotId, interviewerTimeSlot);
+      @RequestBody InterviewerTimeSlotRequestForm interviewerTimeSlot) {
+    SimpleUserPrincipal principal = (SimpleUserPrincipal) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+    if (principal.getUser().getEmail().equals(interviewerEmail)) {
+      return interviewerTimeSlotService.updateSlot(interviewerEmail, slotId, interviewerTimeSlot);
+    } else {
+      throw new PermissionDenied();
+    }
   }
 
   /**

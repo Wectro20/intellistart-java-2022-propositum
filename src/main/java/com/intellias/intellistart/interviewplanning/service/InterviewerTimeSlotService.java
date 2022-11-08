@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -39,10 +40,13 @@ public class InterviewerTimeSlotService {
   @Value("${interview.duration_minutes}")
   private Integer interviewDuration;
 
+  @Autowired
   private BookingLimitRepository bookingLimitRepository;
-
+  @Autowired
   private UserRepository userRepository;
+  @Autowired
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
+  @Autowired
   private GetWeekNumberService weekService;
   private TimeSlotValidationService timeSlotValidationService;
 

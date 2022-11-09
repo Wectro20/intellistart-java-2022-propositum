@@ -18,4 +18,6 @@ public interface CandidateTimeSlotRepository extends JpaRepository<CandidateTime
   List<CandidateTimeSlot> findByEmail(String candidateEmail);
 
   List<CandidateTimeSlot> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
+
+  List<CandidateTimeSlot> findByDateAndEmail(LocalDate date, String candidateEmail);
 }

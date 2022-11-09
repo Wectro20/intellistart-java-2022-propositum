@@ -114,8 +114,6 @@ class CandidateTimeSlotServiceTest {
     assertEquals("17:00; 09:00", exception.getMessage());
   }
 
-  // TODO: Change or remove test as we no longer check Candidates in database
-
 
   @Test
   void createSlotWhichOverlapsAndThrowException() {
@@ -132,12 +130,33 @@ class CandidateTimeSlotServiceTest {
     Mockito.when(candidateTimeSlotRepository.findByEmail(user.getEmail()))
         .thenReturn((List.of(candidateTimeSlot)));
 
+    // New slot is inside the existing one
     SlotIsOverlappingException exception = assertThrows(
-        SlotIsOverlappingException.class, () -> candidateTimeSlotService.createSlot(userEmail,
-            LocalDate.of(2022, 11, 10),
-            LocalTime.of(9, 0), // 09:00
-            LocalTime.of(17, 0) // 17:00
-        ));
+            SlotIsOverlappingException.class, () -> candidateTimeSlotService.createSlot(userEmail,
+                    LocalDate.of(2022, 11, 10),
+                    LocalTime.of(10, 0), // 10:00
+                    LocalTime.of(16, 0) // 16:00
+            ));
+
+    assertEquals("2", exception.getMessage().substring(exception.getMessage().length()-1));
+
+    // New slot covers the existing one from both sides
+    exception = assertThrows(
+            SlotIsOverlappingException.class, () -> candidateTimeSlotService.createSlot(userEmail,
+                    LocalDate.of(2022, 11, 10),
+                    LocalTime.of(8, 0), // 08:00
+                    LocalTime.of(18, 0) // 18:00
+            ));
+
+    assertEquals("2", exception.getMessage().substring(exception.getMessage().length()-1));
+
+    // New slot covers the existing one from right side
+    exception = assertThrows(
+            SlotIsOverlappingException.class, () -> candidateTimeSlotService.createSlot(userEmail,
+                    LocalDate.of(2022, 11, 10),
+                    LocalTime.of(15, 0), // 15:00
+                    LocalTime.of(20, 0) // 20:00
+            ));
 
     assertEquals("2", exception.getMessage().substring(exception.getMessage().length()-1));
   }

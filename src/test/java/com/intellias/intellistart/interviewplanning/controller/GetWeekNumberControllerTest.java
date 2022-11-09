@@ -4,10 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
 import com.intellias.intellistart.interviewplanning.model.WeekNumber;
 import com.intellias.intellistart.interviewplanning.security.config.JwtRequestFilter;
+import com.intellias.intellistart.interviewplanning.service.GetWeekNumberService;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +35,8 @@ class GetWeekNumberControllerTest {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
+  @Autowired
+  private GetWeekNumberService getWeekNumberService;
   @Autowired
   private JwtRequestFilter jwtRequestFilter;
   @Autowired
@@ -82,5 +89,19 @@ class GetWeekNumberControllerTest {
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.content().string(response))
         .andDo(MockMvcResultHandlers.print());
+  }
+
+  @Test
+  void sendGetRequestToSeeCurrentWeekNumberAndDay() {
+    int weekNumber = dates.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+
+    LocalDate localDate = LocalDate.now()
+        .with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, weekNumber)
+        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+    LocalDate dateForWeekNumAndDay = getWeekNumberService.getDateForWeekNumAndDay(weekNumber,
+        TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+    Assertions.assertEquals(localDate, dateForWeekNumAndDay);
   }
 }

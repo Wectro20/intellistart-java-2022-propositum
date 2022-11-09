@@ -3,9 +3,9 @@ package com.intellias.intellistart.interviewplanning.controller;
 import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.security.SecurityUtil;
-import com.intellias.intellistart.interviewplanning.security.config.SimpleUserPrincipal;
 import com.intellias.intellistart.interviewplanning.service.InterviewerTimeSlotService;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotRequestForm;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,15 +47,16 @@ public class InterviewerTimeSlotController {
    * Endpoint to update time slot for Interviewer.
    *
    * @param slotId              for which update
-   * @param interviewerTimeSlot request body of time slot
+   * @param interviewerTimeSlotRequestForm request body of time slot
    * @return updated interviewer time slot
    */
   @PostMapping("/interviewers/slots/{slotId}")
   @PreAuthorize("hasAuthority('INTERVIEWER')")
   public InterviewerTimeSlot updateSlot(@PathVariable Long slotId,
-      @RequestBody InterviewerTimeSlot interviewerTimeSlot) {
+      @RequestBody InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
     return interviewerTimeSlotService.updateSlot(SecurityUtil.getCurrentPrincipal().getEmail(),
-        slotId, interviewerTimeSlot);
+        slotId, interviewerTimeSlotRequestForm);
+
   }
 
   /**

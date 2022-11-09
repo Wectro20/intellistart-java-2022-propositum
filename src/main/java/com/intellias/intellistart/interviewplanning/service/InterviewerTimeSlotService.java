@@ -18,6 +18,7 @@ import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotRequestForm;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -149,30 +150,47 @@ public class InterviewerTimeSlotService {
    *
    * @param interviewerEmail    for which update slot
    * @param slotId              for which update
-   * @param interviewerTimeSlot request body of time slot
+   * @param interviewerTimeSlotRequestForm request body of time slot
    * @return updated interviewer time slot
+   *
+   * @throws SlotNotFoundException interviewer slot with given slotId not found
+   * @throws InterviewerNotFoundException interviewer with given email not found
+   * @throws WeekNumberNotAcceptableException incorrect week number
+   *
    */
 
   public InterviewerTimeSlot updateSlot(String interviewerEmail, Long slotId,
-      InterviewerTimeSlot interviewerTimeSlot) {
+      InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
+    InterviewerTimeSlot interviewerTimeSlot =
+        interviewerTimeSlotRequestForm.getInterviewerTimeSlot();
 
     LocalTime from = interviewerTimeSlot.getFrom();
     LocalTime to = interviewerTimeSlot.getTo();
     InterviewDayOfWeek dayOfWeek = interviewerTimeSlot.getDayOfWeek();
 
+
+    final User user = userRepository.findByEmail(interviewerEmail)
+            .orElseThrow(InterviewerNotFoundException::new);
+
+    validateWeekNumberForUpdate(interviewerTimeSlot.getWeekNum(), user.getRole());
+
+
     if (to != null && from != null && dayOfWeek != null) {
       timeSlotValidationService.validateTimeSlotBoundaries(from, to);
     }
 
-    User user = userRepository.findByEmail(interviewerEmail)
-        .orElseThrow(InterviewerNotFoundException::new);
-
     InterviewerTimeSlot outdatedInterviewerTimeSlot = interviewerTimeSlotRepository.findById(slotId)
         .orElseThrow(SlotNotFoundException::new);
+
+
+    if (!interviewerEmail.equals(outdatedInterviewerTimeSlot.getUser().getEmail())) {
+      throw new SlotNotFoundException();
+    }
 
     interviewerTimeSlot.setStatus(outdatedInterviewerTimeSlot.getStatus());
     interviewerTimeSlot.setId(slotId);
     interviewerTimeSlot.setUser(user);
+
     return interviewerTimeSlotRepository.save(interviewerTimeSlot);
   }
 
@@ -207,6 +225,14 @@ public class InterviewerTimeSlotService {
       bookingLimit.setBookingLimit(limitValue);
     }
     return bookingLimitRepository.save(bookingLimit);
+  }
+
+  private void validateWeekNumberForUpdate(Integer weekNum, User.UserRole userRole) {
+    int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
+
+    if (userRole == User.UserRole.INTERVIEWER && weekNum < nextWeekNum) {
+      throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
+    }
   }
 
   private void validateWeekNumber(Integer weekNum) {

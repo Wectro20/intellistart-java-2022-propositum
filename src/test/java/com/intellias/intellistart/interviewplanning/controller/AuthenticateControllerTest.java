@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -37,6 +39,7 @@ class AuthenticateControllerTest {
   @MockBean
   private Facebook facebook;
   private static final String BASIC_LOGIN_URL = "/login";
+  private static final String BASIC_ME_URL = "/me";
 
   private static final String RIGHT_REQUEST = "{\n"
       + "    \"token\": \"kAz8WZBa9ZAPTXBq5P0L20WvpO3TgctBE7GZAQGDTD3nBgZCrL0gsXWEt1nG1poivj5RFwAd3Cnh5cnLZCgga7hU0nV8GLhGGt5EvOfx4yP9iH8HZB4iZAV3ec7ZBy4Y085UATY\"\n"
@@ -46,6 +49,7 @@ class AuthenticateControllerTest {
       + "}";
 
   private static final Profile profileWithEmailAndName = new Profile("Denis", "denis@gmail.com");
+  private static final String TEST_EMAIL = "your@gmail.com";
   private static final Profile profileWithOutEmail = new Profile("Denis", null);
 
   @BeforeEach
@@ -93,6 +97,20 @@ class AuthenticateControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isNotFound());
+  }
+
+  @Test
+  @WithUserDetails(TEST_EMAIL)
+  void sendMeRequestWithValidFbAccessTokenAndRetrieveResponse() throws Exception {
+    Mockito.when(facebook.getProfile(ArgumentMatchers.anyString()))
+        .thenReturn(profileWithEmailAndName);
+
+    mockMvc.perform(MockMvcRequestBuilders.get(BASIC_ME_URL)
+            .content(RIGHT_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(MockMvcResultHandlers.print());
   }
 
 }

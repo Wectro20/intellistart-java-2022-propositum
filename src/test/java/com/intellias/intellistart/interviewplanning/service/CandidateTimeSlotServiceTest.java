@@ -127,7 +127,7 @@ class CandidateTimeSlotServiceTest {
         .build();
 
     Mockito.when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
-    Mockito.when(candidateTimeSlotRepository.findByEmail(user.getEmail()))
+    Mockito.when(candidateTimeSlotRepository.findByDateAndEmail(LocalDate.of(2022, 11, 10), user.getEmail()))
         .thenReturn((List.of(candidateTimeSlot)));
 
     // New slot is inside the existing one

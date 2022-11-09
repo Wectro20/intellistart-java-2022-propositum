@@ -129,13 +129,14 @@ public class CandidateTimeSlotService {
    */
   private void validateSlotIsNotOverlapping(String candidateEmail,
                                             LocalDate date, LocalTime start, LocalTime end) {
-    List<CandidateTimeSlot> slotList = candidateTimeSlotRepository.findByDateAndEmail(date, candidateEmail);
+    List<CandidateTimeSlot> slotList = candidateTimeSlotRepository
+            .findByDateAndEmail(date, candidateEmail);
 
     Optional<CandidateTimeSlot> overlappingSlot = slotList
         .stream()
-        .filter(slot -> (start.isAfter(slot.getFrom()) && start.isBefore(slot.getTo())) ||
-                (end.isAfter(slot.getFrom()) && end.isBefore(slot.getTo())) ||
-                (start.isBefore(slot.getFrom()) && start.isAfter(slot.getTo())))
+        .filter(slot -> (start.isAfter(slot.getFrom()) && start.isBefore(slot.getTo()))
+                || (end.isAfter(slot.getFrom()) && end.isBefore(slot.getTo()))
+                || (start.isBefore(slot.getFrom()) && end.isAfter(slot.getTo())))
         .findAny();
     if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());

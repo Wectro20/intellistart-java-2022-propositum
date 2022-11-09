@@ -12,6 +12,7 @@ import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
+import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
@@ -160,7 +161,7 @@ public class InterviewerTimeSlotService {
    */
 
   public InterviewerTimeSlot updateSlot(String interviewerEmail, Long slotId,
-      InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
+      InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm, User authUser) {
     InterviewerTimeSlot interviewerTimeSlot =
         interviewerTimeSlotRequestForm.getInterviewerTimeSlot();
 
@@ -172,7 +173,8 @@ public class InterviewerTimeSlotService {
     final User user = userRepository.findByEmail(interviewerEmail)
             .orElseThrow(InterviewerNotFoundException::new);
 
-    validateWeekNumberForUpdate(interviewerTimeSlot.getWeekNum(), user.getRole());
+    validateWeekNumberForUpdate(interviewerTimeSlot.getWeekNum(),
+        authUser.getRole());
 
 
     if (to != null && from != null && dayOfWeek != null) {
@@ -229,8 +231,12 @@ public class InterviewerTimeSlotService {
 
   private void validateWeekNumberForUpdate(Integer weekNum, User.UserRole userRole) {
     int nextWeekNum = weekService.getNextWeekNumber().getWeekNum();
+    int currentWeekNum = weekService.getCurrentWeekNumber().getWeekNum();
 
-    if (userRole == User.UserRole.INTERVIEWER && weekNum < nextWeekNum) {
+    if (userRole == User.UserRole.INTERVIEWER && !weekNum.equals(nextWeekNum)) {
+      throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
+    } else if (userRole == UserRole.COORDINATOR
+        && (!weekNum.equals(currentWeekNum) || !weekNum.equals(nextWeekNum))) {
       throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
     }
   }

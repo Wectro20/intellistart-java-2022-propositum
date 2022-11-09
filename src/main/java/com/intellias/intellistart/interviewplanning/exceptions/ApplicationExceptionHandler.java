@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ControllerAdvice
 public class ApplicationExceptionHandler {
-
-  private static final  String PERMISSION_DENIED = "permission_denied";
   private static final String INTERVIEWER_NOT_FOUND = "interviewer_not_found";
   private static final String USER_NOT_FOUND = "user_not_found";
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";
@@ -45,16 +43,6 @@ public class ApplicationExceptionHandler {
   @ExceptionHandler(UserAlreadyExistsException.class)
   public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException e) {
     return new ErrorResponse(USER_ALREADY_EXIST, e.getMessage());
-  }
-
-  /**
-   * Exception handler for PermissionDenied.
-   */
-  @ResponseBody
-  @ResponseStatus(value = HttpStatus.FORBIDDEN)
-  @ExceptionHandler(PermissionDenied.class)
-  public ErrorResponse handlePermissionDeniedException() {
-    return new ErrorResponse(PERMISSION_DENIED, "you don`t have permission to access this data");
   }
 
   /**

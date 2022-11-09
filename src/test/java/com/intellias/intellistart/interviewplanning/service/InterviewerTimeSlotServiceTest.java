@@ -166,8 +166,10 @@ public class InterviewerTimeSlotServiceTest {
   @Test
   public void updateSlot_Should_SuccessfullyUpdateSlot() {
     Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
-    Mockito.when(timeSlotRepository.findById(SLOT_ID)).thenReturn(Optional.of(TIME_SLOT_FOR_UPDATE));
-    timeSlotService.updateSlot(EMAIL, SLOT_ID, TIME_SLOT_REQUEST_FORM);
+    Mockito.when(timeSlotRepository.findById(SLOT_ID))
+        .thenReturn(Optional.of(TIME_SLOT_FOR_UPDATE));
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(14));
+    timeSlotService.updateSlot(EMAIL, SLOT_ID, TIME_SLOT_REQUEST_FORM, USER);
 
 
     Mockito.verify(timeSlotRepository, Mockito.times(1))
@@ -188,9 +190,11 @@ public class InterviewerTimeSlotServiceTest {
   public void updateSlot_WhenSlotNotFound_Should_ThrowException() {
     Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
     Mockito.when(timeSlotRepository.findById(SLOT_ID)).thenReturn(Optional.empty());
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(14));
+
 
     assertThrows(SlotNotFoundException.class,
-            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID ,TIME_SLOT_REQUEST_FORM));
+            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID ,TIME_SLOT_REQUEST_FORM, USER));
   }
 
 
@@ -198,8 +202,9 @@ public class InterviewerTimeSlotServiceTest {
   public void updateSlot_WhenWeekNumberNotAcceptable_Should_ThrowException() {
     TIME_SLOT_REQUEST_FORM.setWeekNum(14);
     Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
+    Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(14));
     assertThrows(WeekNumberNotAcceptableException.class,
-            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID , TIME_SLOT_REQUEST_FORM));
+            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID , TIME_SLOT_REQUEST_FORM, USER));
   }
 
 

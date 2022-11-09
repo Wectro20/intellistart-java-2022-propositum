@@ -55,8 +55,26 @@ public class InterviewerTimeSlotController {
   public InterviewerTimeSlot updateSlot(@PathVariable Long slotId,
       @RequestBody InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
     return interviewerTimeSlotService.updateSlot(SecurityUtil.getCurrentPrincipal().getEmail(),
-        slotId, interviewerTimeSlotRequestForm);
+        slotId, interviewerTimeSlotRequestForm, SecurityUtil.getCurrentPrincipal().getUser());
+  }
 
+
+
+
+  /**
+   * Endpoint to update time slot for Interviewer.
+   *
+   * @param slotId              for which update
+   * @param interviewerTimeSlotRequestForm request body of time slot
+   * @return updated interviewer time slot
+   */
+  @PostMapping("/interviewers/{interviewerEmail}/slots/{slotId}")
+  @PreAuthorize("hasAuthority('COORDINATOR')")
+  public InterviewerTimeSlot updateSlotByCoordinator(@PathVariable Long slotId,
+      @PathVariable String interviewerEmail,
+      @RequestBody InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
+    return interviewerTimeSlotService.updateSlot(interviewerEmail,
+        slotId, interviewerTimeSlotRequestForm, SecurityUtil.getCurrentPrincipal().getUser());
   }
 
   /**

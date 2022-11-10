@@ -60,7 +60,7 @@ The app defines following CRUD APIs.
 * Authentication & authorization
 For authentication or authorization you had to have Facebook token</br>
 `POST /authenticate`</br>
-  Necessary data parameter: 
+  JSON body: 
     ```
     {
         "token": "YOUR_TOKEN"

@@ -35,13 +35,8 @@ jobs:
         min-coverage-overall: 10
         min-coverage-changed-files: 10
         
-    - name: Generate JaCoCo badge
-      id: jacoco-badge
-      uses: cicirello/jacoco-badge-generator@v2
-      with:
-        badges-directory: badges
-        generate-branches-badge: true
-        generate-summary: true
+    - name: jacoco-badge-generator
+      uses: cicirello/jacoco-badge-generator@v2.8.1
 
     - name: Log coverage percentage
       run: |

@@ -3,13 +3,13 @@
 [![build](https://github.com/Wectro20/intellistart-java-2022-propositum/actions/workflows/maven.yml/badge.svg)](https://github.com/Wectro20/intellistart-java-2022-propositum/actions/workflows/maven.yml)
 
 ## Overview
-* [Project information](#project-information)
+* [About project](#about-project)
 * [How to Run](#how-to-run)
 * [API](#api)
 * [SQL Diagram](#sql-diagram)
 
 
-### Project information
+### About project
 RESTful API for interview planning application, which simplifies the process of time management and coordinating between interviewers and candidates.
 #### Application functionality
 - Creating Interviewer's slots

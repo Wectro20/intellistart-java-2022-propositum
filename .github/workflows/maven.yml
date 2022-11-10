@@ -35,6 +35,14 @@ jobs:
         min-coverage-overall: 10
         min-coverage-changed-files: 10
 
+    - name: Generate JaCoCo badge
+      id: jacoco
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        badges-directory: badges
+        generate-branches-badge: true
+        generate-summary: true
+
     - name: Log coverage percentage
       run: |
         echo "coverage overall = ${{ steps.jacoco.outputs.coverage-overall }}"

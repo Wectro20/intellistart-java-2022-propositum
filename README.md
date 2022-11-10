@@ -59,7 +59,7 @@ The app will start running at http://localhost:8080.
 The app defines following CRUD APIs.
 * Authentication & authorization
 For authentication or authorization you had to have Facebook token</br>
-`POST /authenticate`</br>
+`POST /login`</br>
   JSON body: 
     ```
     {

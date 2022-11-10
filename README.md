@@ -1,14 +1,12 @@
 # intellistart-java-2022-Propositum
 
-## SQL Diagram
-![SQL_Diagram](https://user-images.githubusercontent.com/56608205/194121497-8d8dc2c9-5a2f-4256-a097-8c3e42e82968.jpg)
-
 [![build](https://github.com/Wectro20/intellistart-java-2022-propositum/actions/workflows/maven.yml/badge.svg)](https://github.com/Wectro20/intellistart-java-2022-propositum/actions/workflows/maven.yml)
 
 ## Overview
 * [Project information](#project-information)
 * [How to Run](#how-to-run)
 * [API](#api)
+* [SQL Diagram](#sql-diagram)
 
 
 ### Project information
@@ -70,4 +68,5 @@ For authentication or authorization you had to have Facebook token</br>
   ```
   Gained JWT should be put in request header as a parameter </br>`Authorization` with value `Bearer "GAINED_JWT"`
 
-
+### SQL Diagram
+![SQL_Diagram](https://user-images.githubusercontent.com/56608205/194121497-8d8dc2c9-5a2f-4256-a097-8c3e42e82968.jpg)

@@ -41,6 +41,7 @@ class FacebookTest {
     Assertions.assertEquals(profile.hashCode(), VALID_PROFILE.hashCode());*/
   }
 
+
   @Test
   void passInvalidUserTokenAndThrowInvalidAccessTokenException() {
     Assertions.assertThrows(InvalidAccessTokenException.class,

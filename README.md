@@ -19,7 +19,7 @@ RESTful API for interview planning application, which simplifies the process of 
 
 #### How to Run manualy
 
-This application is packaged as a jar which has Tomcat 8 embedded. No Tomcat or JBoss installation is necessary. You run it using the ```java -jar``` command.
+This application is packaged as a jar which has Tomcat 8 embedded. No Tomcat or JBoss installation is necessary.</br> You run it using the ```java -jar``` command.
 
 * Clone this repository
 * Make sure you are using JDK 1.11 and Maven 3.x

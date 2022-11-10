@@ -36,7 +36,7 @@ jobs:
         min-coverage-changed-files: 10
 
     - name: Generate JaCoCo badge
-      id: jacoco
+      id: jacoco-badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
         badges-directory: badges

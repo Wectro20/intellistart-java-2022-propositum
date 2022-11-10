@@ -67,6 +67,7 @@ For authentication or authorization you had to have Facebook token</br>
   }
   ```
   Gained JWT should be put in request header as a parameter </br>`Authorization` with value `Bearer "GAINED_JWT"`
+* More requests you can check in the postman collection
 
 ### SQL Diagram
 ![SQL_Diagram](https://user-images.githubusercontent.com/56608205/194121497-8d8dc2c9-5a2f-4256-a097-8c3e42e82968.jpg)

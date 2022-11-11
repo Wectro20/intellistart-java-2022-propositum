@@ -60,7 +60,7 @@ class CandidateControllerTest {
   private static final String url = "/candidates/current/slots";
 
   private static CandidateTimeSlot candidateTimeSlot = CandidateTimeSlot.builder()
-      .date(LocalDate.of(2022, 12, 16))
+      .date(LocalDate.of(2022, 11, 10))
       .id(2L)
       .from(LocalTime.of(9, 0))
       .to(LocalTime.of(17, 0))
@@ -69,7 +69,7 @@ class CandidateControllerTest {
       .build();
 
   private static CandidateTimeSlot updatedSlot = CandidateTimeSlot.builder()
-      .date(LocalDate.of(2022, 12, 16))
+      .date(LocalDate.of(2022, 11, 10))
       .id(2L)
       .from(LocalTime.of(10, 0))
       .to(LocalTime.of(17, 0))
@@ -80,38 +80,38 @@ class CandidateControllerTest {
   private static final String RIGHT_REQUEST = "{\n"
       + "\"from\": \"09:00\",\n"
       + "\"to\": \"17:00\",\n"
-      + "\"date\": \"2022-12-16\"\n"
+      + "\"date\": \"2022-11-10\"\n"
       + "}";
 
   private static final String UPDATE_REQUEST = "{\n"
       + "\"from\": \"10:00\",\n"
       + "\"to\": \"17:00\",\n"
-      + "\"date\": \"2022-12-16\"\n"
+      + "\"date\": \"2022-11-10\"\n"
       + "}";
 
   private static final String BAD_DAY_OF_WEEK_REQUEST = "{\n"
       + "\"from\": \"09:00\",\n"
       + "\"to\": \"17:00\",\n"
-      + "\"date\": \"2022-12-10\"\n"
+      + "\"date\": \"2022-11-12\"\n"
       + "}";
 
   private static final String BAD_FROM_BOUNDARIES_REQUEST = "{\n"
       + "\"from\": \"09:02\",\n"
       + "\"to\": \"17:00\",\n"
-      + "\"date\": \"2022-12-16\"\n"
+      + "\"date\": \"2022-11-10\"\n"
       + "}";
 
   private static final String BAD_FROM_TO_REQUEST = "{\n"
       + "\"from\": \"09:00\",\n"
       + "\"to\": \"10:00\",\n"
-      + "\"date\": \"2022-12-16\"\n"
+      + "\"date\": \"2022-11-10\"\n"
       + "}";
 
   private static final String RIGHT_RESPONSE = "{"
       + "\"id\":2,"
       + "\"from\":\"09:00\","
       + "\"to\":\"17:00\","
-      + "\"date\":\"2022-12-16\""
+      + "\"date\":\"2022-11-10\""
       + "}";
 
   private static final String BAD_DAY_OF_WEEK_RESPONSE = "{"
@@ -145,7 +145,7 @@ class CandidateControllerTest {
   @AfterEach
   public void prepare() {
     candidateTimeSlot = CandidateTimeSlot.builder()
-        .date(LocalDate.of(2022, 12, 16))
+        .date(LocalDate.of(2022, 11, 10))
         .id(2L)
         .from(LocalTime.of(9, 0))
         .to(LocalTime.of(17, 0))
@@ -172,7 +172,7 @@ class CandidateControllerTest {
   @Test
   @WithUserDetails(userEmail)
   void createCandidateTimeSlotWithInvalidDayOfWeekAndThrowException() throws Exception {
-    candidateTimeSlot.setDate(LocalDate.of(2022, 12, 10));
+    candidateTimeSlot.setDate(LocalDate.of(2022, 11, 12));
 
     Mockito.doReturn(candidateTimeSlot).when(candidateTimeSlotRepository)
         .save(ArgumentMatchers.any(CandidateTimeSlot.class));

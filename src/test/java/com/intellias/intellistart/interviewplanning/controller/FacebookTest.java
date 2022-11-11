@@ -1,7 +1,5 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidAccessTokenException;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Facebook;
@@ -23,24 +21,13 @@ class FacebookTest {
   private Facebook facebook;
 
   private static final String ACCESS_TOKEN_WITH_EMAIL_AND_NAME =
-      "EAAVwMOQSGrEBAH22e0uj1lPiBJdiztC2ZBOFRF2yBCyugNVQs85ysT0J7dofgr3vT4X7iXSVdJObX5aZCZAk0F8ZCp"
-          + "jNm83ZAymU6cv3LZCAuVzAXYjvFVdTkkzB2dMouy1cdVngoqlm00ZCz4hAYvXqiTZABPXZAndkaTAmZCjZCYPyZ"
-          + "Auq8cZAJ63ocIZB9ZAnzdLNpGh5ietWBrTL7CNgoOovHRf";
+      "EAAVwMOQSGrEBAN95v7SGLGkyJm1fnQ9ZCCfQCSq4WGRdZALMSXcQsxhmR3WuWJJqEZCeJumgxkVkGdTlAso2XNZC3ph"
+          + "jNzZB5XZATYDjtQEXWUT4bZCFJkWLuZAywYTPhUM2QeTLUqXdy65ZCee5jtkhFabP80gmIUt5Nz5gcyT7aJbZBT"
+          + "x1UPD7AqWvbEalVM9ERfZCKB5TjMvywZDZD";
   private static final String INVALID_ACCESS_TOKEN = "blabalbalblalbalbablabalbalblalbal"
       + "baVblabalbalblalbalba";
   private static final Profile VALID_PROFILE = new Profile("Dorothy Alhgbadhecbbg Shepardman",
       "rcpytlaiid_1667565185@tfbnw.net");
-
-  @Test
-  void passValidUserTokenAndRetrieveUserProfile() {
-    /*Profile profile = facebook.getProfile(ACCESS_TOKEN_WITH_EMAIL_AND_NAME);
-
-    assertNotNull(profile);
-    Assertions.assertEquals(profile.getEmail(), VALID_PROFILE.getEmail());
-    Assertions.assertEquals(profile.getName(), VALID_PROFILE.getName());
-    Assertions.assertEquals(profile.hashCode(), VALID_PROFILE.hashCode());*/
-  }
-
 
   @Test
   void passInvalidUserTokenAndThrowInvalidAccessTokenException() {

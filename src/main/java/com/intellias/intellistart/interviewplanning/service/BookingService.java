@@ -4,6 +4,7 @@ import static com.intellias.intellistart.interviewplanning.exceptions.Applicatio
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.SUBJECT_DESCRIPTION_NOT_VALID;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
+import com.intellias.intellistart.interviewplanning.exceptions.BookingNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
@@ -12,6 +13,7 @@ import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.BookingRepository;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
+import com.intellias.intellistart.interviewplanning.service.dto.BookingChangeRequestForm;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import java.time.LocalTime;
 import java.util.List;
@@ -121,4 +123,143 @@ public class BookingService {
             && booking.getEndTime().equals(bookingDto.getEndTime()));
   }
 
+
+
+  /**
+   * Create booking for interview.
+   *
+   * @param bookingId id of the booking which needs to update.
+   * @param bookingChangeRequestForm the body of the booking which needs to update.
+   *
+   * @return saved booking
+   */
+  public BookingDto updateBooking(Long bookingId,
+      BookingChangeRequestForm bookingChangeRequestForm) {
+    log.info("Update booking with details {}", bookingChangeRequestForm);
+
+    Booking outdatedBooking = bookingRepository
+        .findById(bookingId)
+        .orElseThrow(BookingNotFoundException::new);
+
+    InterviewerTimeSlot interviewerTimeSlot = outdatedBooking.getInterviewerTimeSlot();
+    CandidateTimeSlot candidateTimeSlot = outdatedBooking.getCandidateTimeSlot();
+
+    if (isTimeNotInInterviewerSlotRange(interviewerTimeSlot,
+        bookingChangeRequestForm.getStartTime())
+        || isTimeNotInInterviewerSlotRange(interviewerTimeSlot,
+        bookingChangeRequestForm.getEndTime())) {
+
+      log.error("From/to does not fit into interviewer slot range {} - {}",
+          interviewerTimeSlot.getFrom(), interviewerTimeSlot.getTo());
+
+      throw new ValidationException("from/to does not fit into interviewer time slot",
+          INVALID_BOUNDARIES);
+    } else if (isTimeNotInCandidateSlotRange(candidateTimeSlot,
+        bookingChangeRequestForm.getStartTime())
+        || isTimeNotInCandidateSlotRange(candidateTimeSlot,
+        bookingChangeRequestForm.getEndTime())) {
+
+      log.error("From/to does not fit into candidate slot range {} - {}",
+          candidateTimeSlot.getFrom(), candidateTimeSlot.getTo());
+
+      throw new ValidationException("from/to does not fit into bounded candidate time slot",
+          INVALID_BOUNDARIES);
+    }
+
+    timeSlotValidationService
+        .validateBookingTimeSlotBoundaries(bookingChangeRequestForm.getStartTime(),
+          bookingChangeRequestForm.getEndTime());
+
+    validateBookingInInterviewerTimeSlot(bookingChangeRequestForm,
+        outdatedBooking);
+
+    validateBookingInCandidateTimeSlot(bookingChangeRequestForm,
+        outdatedBooking);
+
+    if (bookingChangeRequestForm.getSubject().length() > subjectLength) {
+      throw new ValidationException("subject max length is " + subjectLength + " chars",
+          SUBJECT_DESCRIPTION_NOT_VALID);
+    }
+
+    if (bookingChangeRequestForm.getDescription().length() > descriptionLength) {
+      throw new ValidationException(
+          "description max length is " + descriptionLength + " chars",
+          SUBJECT_DESCRIPTION_NOT_VALID);
+    }
+
+    outdatedBooking.setStartTime(bookingChangeRequestForm.getStartTime());
+    outdatedBooking.setEndTime(bookingChangeRequestForm.getEndTime());
+    outdatedBooking.setSubject(bookingChangeRequestForm.getSubject());
+    outdatedBooking.setDescription(bookingChangeRequestForm.getDescription());
+
+    bookingRepository.save(outdatedBooking);
+
+    log.info("Booking successfully updated with id {}", bookingId);
+
+    return BookingDto.builder()
+        .id(bookingId)
+        .startTime(bookingChangeRequestForm.getStartTime())
+        .endTime(bookingChangeRequestForm.getEndTime())
+        .subject(bookingChangeRequestForm.getSubject())
+        .description(bookingChangeRequestForm.getDescription())
+        .candidateTimeSlotId(outdatedBooking.getCandidateTimeSlot().getId())
+        .interviewerTimeSlotId(outdatedBooking.getInterviewerTimeSlot().getId())
+        .build();
+  }
+
+  private void validateBookingInInterviewerTimeSlot(
+      BookingChangeRequestForm bookingChangeRequestForm,
+      Booking outdatedBooking) {
+
+
+    List<Booking> bookings = outdatedBooking
+        .getCandidateTimeSlot()
+        .getBookings();
+
+    bookings.remove(outdatedBooking);
+
+    if (bookings.stream()
+        .anyMatch(booking -> validateBookingTime(booking, bookingChangeRequestForm))) {
+      throw new ValidationException(
+          "already exist booking that intersect given from/to in candidate",
+             INVALID_BOUNDARIES);
+    }
+  }
+
+  private void validateBookingInCandidateTimeSlot(
+      BookingChangeRequestForm bookingChangeRequestForm,
+      Booking outdatedBooking) {
+
+    List<Booking> bookings = outdatedBooking
+        .getInterviewerTimeSlot()
+        .getBookings();
+
+    bookings.remove(outdatedBooking);
+
+    if (bookings.stream()
+        .anyMatch(booking -> validateBookingTime(booking, bookingChangeRequestForm))) {
+      throw new ValidationException(
+          "already exist booking that intersect given from/to in interviewer",
+          INVALID_BOUNDARIES);
+    }
+  }
+
+  private boolean validateBookingTime(Booking booking,
+      BookingChangeRequestForm bookingChangeRequestForm) {
+    LocalTime startTarget = bookingChangeRequestForm.getStartTime();
+    LocalTime endTarget = bookingChangeRequestForm.getEndTime();
+
+    return (booking.getStartTime().isBefore(startTarget)
+        && booking.getEndTime().isAfter(startTarget))
+        || (booking.getStartTime().isBefore(endTarget)
+        && booking.getEndTime().isAfter(endTarget));
+  }
+
+  private boolean isTimeNotInCandidateSlotRange(CandidateTimeSlot timeSlot, LocalTime target) {
+    return target.isBefore(timeSlot.getFrom()) || target.isAfter(timeSlot.getTo());
+  }
 }
+
+
+
+

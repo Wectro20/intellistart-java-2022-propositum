@@ -25,7 +25,6 @@ public class WebSecurity {
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtRequestFilter jwtRequestFilter;
   private final AccessDeniedHandler accessDeniedHandler;
-  private final ExceptionHandlerFilter exceptionHandlerFilter;
 
   /**
    * Basic constructor.
@@ -33,11 +32,10 @@ public class WebSecurity {
   @Autowired
   public WebSecurity(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
       JwtRequestFilter jwtRequestFilter,
-      AccessDeniedHandler accessDeniedHandler, ExceptionHandlerFilter exceptionHandlerFilter) {
+      AccessDeniedHandler accessDeniedHandler) {
     this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     this.jwtRequestFilter = jwtRequestFilter;
     this.accessDeniedHandler = accessDeniedHandler;
-    this.exceptionHandlerFilter = exceptionHandlerFilter;
   }
 
   @Bean
@@ -68,7 +66,6 @@ public class WebSecurity {
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-    http.addFilterBefore(exceptionHandlerFilter, JwtRequestFilter.class);
     return http.build();
   }
 }

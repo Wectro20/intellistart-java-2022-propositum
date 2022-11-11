@@ -57,6 +57,16 @@ public class ApplicationExceptionHandler {
     return new ErrorResponse(INTERVIEWER_NOT_FOUND, "interviewer was not found");
   }
 
+  /**
+   * Exception handler for BookingNotFoundException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(BookingNotFoundException.class)
+  public ErrorResponse handleBookingNotFoundException() {
+    return new ErrorResponse(BOOKING_NOT_FOUND, "booking was not found");
+  }
+
 
   /**
    * Exception handler for UserNotFoundException.

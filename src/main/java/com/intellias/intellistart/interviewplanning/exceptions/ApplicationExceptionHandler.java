@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ControllerAdvice
 public class ApplicationExceptionHandler {
-
-  private static final  String PERMISSION_DENIED = "permission_denied";
   private static final String INTERVIEWER_NOT_FOUND = "interviewer_not_found";
   private static final String USER_NOT_FOUND = "user_not_found";
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";

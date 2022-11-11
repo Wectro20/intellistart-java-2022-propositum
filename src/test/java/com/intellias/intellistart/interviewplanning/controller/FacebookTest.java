@@ -7,6 +7,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.InvalidAccessToke
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Facebook;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Profile;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ class FacebookTest {
       "rcpytlaiid_1667565185@tfbnw.net");
 
   @Test
+  @Disabled("need to prolong expiration of fb test token")
   void passValidUserTokenAndRetrieveUserProfile() {
     /*Profile profile = facebook.getProfile(ACCESS_TOKEN_WITH_EMAIL_AND_NAME);
 

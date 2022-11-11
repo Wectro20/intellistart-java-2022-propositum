@@ -219,6 +219,8 @@ public class BookingService {
     bookings.remove(outdatedBooking);
 
     if (bookings.stream()
+        .filter(booking -> booking.getCandidateTimeSlot().getDate()
+            .equals(outdatedBooking.getCandidateTimeSlot().getDate()))
         .anyMatch(booking -> validateBookingTime(booking, bookingChangeRequestForm))) {
       throw new ValidationException(
           "already exist booking that intersect given from/to in candidate",
@@ -237,6 +239,8 @@ public class BookingService {
     bookings.remove(outdatedBooking);
 
     if (bookings.stream()
+        .filter(booking -> booking.getCandidateTimeSlot().getDate()
+            .equals(outdatedBooking.getCandidateTimeSlot().getDate()))
         .anyMatch(booking -> validateBookingTime(booking, bookingChangeRequestForm))) {
       throw new ValidationException(
           "already exist booking that intersect given from/to in interviewer",

@@ -1,6 +1,5 @@
 package com.intellias.intellistart.interviewplanning.security.config;
 
-import com.intellias.intellistart.interviewplanning.exceptions.UserNotFoundException;
 import com.intellias.intellistart.interviewplanning.model.User;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -47,12 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
       jwtToken = requestTokenHeader.substring(7);
 
-      User user = null;
-      try {
-        user = jwtTokenUtil.parseTokenToUser(jwtToken);
-      } catch (UserNotFoundException e) {
-        throw new UserNotFoundException(e.getMessage());
-      }
+      User user = jwtTokenUtil.parseTokenToUser(jwtToken);
 
       if (SecurityContextHolder.getContext().getAuthentication() == null) {
         UserDetails userDetails = new SimpleUserPrincipal(user);

@@ -1,13 +1,10 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidAccessTokenException;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Facebook;
 import com.intellias.intellistart.interviewplanning.security.authentication.facebook.Profile;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +28,6 @@ class FacebookTest {
       + "baVblabalbalblalbalba";
   private static final Profile VALID_PROFILE = new Profile("Dorothy Alhgbadhecbbg Shepardman",
       "rcpytlaiid_1667565185@tfbnw.net");
-
-  @Test
-  @Disabled("need to prolong expiration of fb test token")
-  void passValidUserTokenAndRetrieveUserProfile() {
-    /*Profile profile = facebook.getProfile(ACCESS_TOKEN_WITH_EMAIL_AND_NAME);
-
-    assertNotNull(profile);
-    Assertions.assertEquals(profile.getEmail(), VALID_PROFILE.getEmail());
-    Assertions.assertEquals(profile.getName(), VALID_PROFILE.getName());
-    Assertions.assertEquals(profile.hashCode(), VALID_PROFILE.hashCode());*/
-  }
-
 
   @Test
   void passInvalidUserTokenAndThrowInvalidAccessTokenException() {

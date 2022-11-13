@@ -130,7 +130,6 @@ public class InterviewerTimeSlotService {
    * Convert Booking entity to BookingDTO.
    *
    * @param booking Booking entity
-
    * @return BookingDTO
    */
   public static BookingDto buildBookingDto(Booking booking) {
@@ -157,7 +156,6 @@ public class InterviewerTimeSlotService {
    * @throws SlotNotFoundException interviewer slot with given slotId not found
    * @throws InterviewerNotFoundException interviewer with given email not found
    * @throws WeekNumberNotAcceptableException incorrect week number
-   *
    */
 
   public InterviewerTimeSlot updateSlot(String interviewerEmail, Long slotId,
@@ -199,29 +197,29 @@ public class InterviewerTimeSlotService {
   /**
    * Get time slot for Interviewer.
    *
-   * @param interviewerId    for getting interviewer id
+   * @param interviewerEmail for getting interviewer id
    * @param limitValue for setting booking limit
    * @return booking limit
    */
-  public BookingLimit setBookingLimit(Long interviewerId, Integer limitValue) {
+  public BookingLimit setBookingLimit(String interviewerEmail, Integer limitValue) {
     if (limitValue < 0) {
       throw new InvalidLimitException("Invalid limit");
     }
     int weekNum = weekService.getNextWeekNumber().getWeekNum();
 
-    User interviewer = userRepository.findById(interviewerId)
-            .orElseThrow(() -> new UserNotFoundException("Invalid User id: " + interviewerId));
+    User interviewer = userRepository.findByEmail(interviewerEmail)
+        .orElseThrow(() -> new UserNotFoundException("Invalid User email: " + interviewerEmail));
 
     Optional<BookingLimit> bookingLimitOptional = bookingLimitRepository
-            .findByUserAndWeekNum(interviewer, weekNum);
+        .findByUserAndWeekNum(interviewer, weekNum);
 
     BookingLimit bookingLimit;
     if (bookingLimitOptional.isEmpty()) {
       bookingLimit = BookingLimit.builder()
-              .bookingLimit(limitValue)
-              .weekNum(weekNum)
-              .user(interviewer)
-              .build();
+          .bookingLimit(limitValue)
+          .weekNum(weekNum)
+          .user(interviewer)
+          .build();
     } else {
       bookingLimit = bookingLimitOptional.get();
       bookingLimit.setBookingLimit(limitValue);

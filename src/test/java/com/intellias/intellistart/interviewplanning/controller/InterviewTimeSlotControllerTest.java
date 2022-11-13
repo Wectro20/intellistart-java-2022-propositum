@@ -9,10 +9,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellias.intellistart.interviewplanning.FileTestUtils;
 import com.intellias.intellistart.interviewplanning.InterviewPlanningApplication;
+import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
 import com.intellias.intellistart.interviewplanning.model.User.UserRole;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.security.config.JwtRequestFilter;
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +38,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(SpringExtension.class)
@@ -61,6 +66,8 @@ public class InterviewTimeSlotControllerTest {
 
   @MockBean
   private UserRepository userRepository;
+  @MockBean
+  private BookingLimitRepository bookingLimitRepository;
 
   @Captor
   private ArgumentCaptor<InterviewerTimeSlot> timeSlotArgumentCaptor;
@@ -196,6 +203,33 @@ public class InterviewTimeSlotControllerTest {
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(content().json(FileTestUtils.readFile(CREATE_SLOT_SHORT_RANGE_RESP_PATH)));
+  }
+
+  @Test
+  @WithUserDetails(value = EMAIL, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  public void setInterviewBookingLimit() throws Exception {
+    Mockito.when(bookingLimitRepository.findByUserAndWeekNum(ArgumentMatchers.any(),
+            ArgumentMatchers.anyInt()))
+        .thenReturn(Optional.empty());
+
+    BookingLimit bookingLimit = BookingLimit.builder()
+        .id(1L)
+        .bookingLimit(10)
+        .user(USER)
+        .build();
+
+    String response = objectMapper.writeValueAsString(bookingLimit);
+
+    Mockito.when(bookingLimitRepository.save(ArgumentMatchers.any()))
+        .thenReturn(bookingLimit);
+
+    this.mockMvc.perform(
+            MockMvcRequestBuilders.post("/interviewers/" + EMAIL + "/limit?bookingLimit=10")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().string(response))
+        .andDo(MockMvcResultHandlers.print());
   }
 
   private String prepareResponseWithWeekNum(String filePath) throws JsonProcessingException {

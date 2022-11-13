@@ -1,8 +1,14 @@
 package com.intellias.intellistart.interviewplanning.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.intellias.intellistart.interviewplanning.exceptions.*;
+import com.intellias.intellistart.interviewplanning.exceptions.InterviewerNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.SlotIsOverlappingException;
+import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
+import com.intellias.intellistart.interviewplanning.exceptions.WeekNumberNotAcceptableException;
+import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
 import com.intellias.intellistart.interviewplanning.model.TimeSlotStatus;
 import com.intellias.intellistart.interviewplanning.model.User;
@@ -13,16 +19,17 @@ import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepos
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.UserRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotDto;
+import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotRequestForm;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import com.intellias.intellistart.interviewplanning.service.dto.InterviewerTimeSlotRequestForm;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -67,7 +74,7 @@ public class InterviewerTimeSlotServiceTest {
   @BeforeEach
   public void setUp() {
     timeSlotService = new InterviewerTimeSlotService(INTERVIEW_DURATION, bookingLimitRepository,
-            userRepository, timeSlotRepository, weekService, timeSlotValidationService);
+        userRepository, timeSlotRepository, weekService, timeSlotValidationService);
 
     TIME_SLOT = InterviewerTimeSlot.builder()
         .from(LocalTime.of(10, 0))
@@ -78,23 +85,21 @@ public class InterviewerTimeSlotServiceTest {
         .user(USER)
         .build();
 
-
     TIME_SLOT_REQUEST_FORM = InterviewerTimeSlotRequestForm.builder()
-            .from(LocalTime.of(10, 0))
-            .to(LocalTime.of(11, 30))
-            .dayOfWeek(InterviewDayOfWeek.MONDAY)
-            .weekNum(15)
-            .build();
-
+        .from(LocalTime.of(10, 0))
+        .to(LocalTime.of(11, 30))
+        .dayOfWeek(InterviewDayOfWeek.MONDAY)
+        .weekNum(15)
+        .build();
 
     TIME_SLOT_FOR_UPDATE = InterviewerTimeSlot.builder()
-            .from(LocalTime.of(12, 0))
-            .to(LocalTime.of(13, 30))
-            .dayOfWeek(InterviewDayOfWeek.TUESDAY)
-            .weekNum(15)
-            .bookings(Collections.emptyList())
-            .user(USER)
-            .build();
+        .from(LocalTime.of(12, 0))
+        .to(LocalTime.of(13, 30))
+        .dayOfWeek(InterviewDayOfWeek.TUESDAY)
+        .weekNum(15)
+        .bookings(Collections.emptyList())
+        .user(USER)
+        .build();
 
     Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(15));
   }
@@ -104,7 +109,6 @@ public class InterviewerTimeSlotServiceTest {
   public void createSlot_Should_SuccessfullyCreateSlotAndSave() {
     Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
     timeSlotService.createSlot(EMAIL, TIME_SLOT);
-
 
     Mockito.verify(timeSlotRepository, Mockito.times(1))
         .save(timeSlotArgumentCaptor.capture());
@@ -171,9 +175,8 @@ public class InterviewerTimeSlotServiceTest {
     Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(14));
     timeSlotService.updateSlot(EMAIL, SLOT_ID, TIME_SLOT_REQUEST_FORM, USER);
 
-
     Mockito.verify(timeSlotRepository, Mockito.times(1))
-            .save(timeSlotArgumentCaptor.capture());
+        .save(timeSlotArgumentCaptor.capture());
 
     InterviewerTimeSlot actualTimeSlot = timeSlotArgumentCaptor.getValue();
 
@@ -192,9 +195,8 @@ public class InterviewerTimeSlotServiceTest {
     Mockito.when(timeSlotRepository.findById(SLOT_ID)).thenReturn(Optional.empty());
     Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(14));
 
-
     assertThrows(SlotNotFoundException.class,
-            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID ,TIME_SLOT_REQUEST_FORM, USER));
+        () -> timeSlotService.updateSlot(EMAIL, SLOT_ID, TIME_SLOT_REQUEST_FORM, USER));
   }
 
 
@@ -204,7 +206,7 @@ public class InterviewerTimeSlotServiceTest {
     Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
     Mockito.when(weekService.getCurrentWeekNumber()).thenReturn(new WeekNumber(14));
     assertThrows(WeekNumberNotAcceptableException.class,
-            () -> timeSlotService.updateSlot(EMAIL, SLOT_ID , TIME_SLOT_REQUEST_FORM, USER));
+        () -> timeSlotService.updateSlot(EMAIL, SLOT_ID, TIME_SLOT_REQUEST_FORM, USER));
   }
 
 
@@ -256,5 +258,26 @@ public class InterviewerTimeSlotServiceTest {
     List<InterviewerTimeSlotDto> actualTimeSlots = timeSlotService.getTimeSlots(EMAIL, 15);
 
     assertEquals(Collections.singletonList(expectedSlot), actualTimeSlots);
+  }
+
+  @Test
+  public void set_BookingLimit_For_Interviewer() {
+    Mockito.when(weekService.getNextWeekNumber()).thenReturn(new WeekNumber(15));
+    Mockito.when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(USER));
+    Mockito.when(bookingLimitRepository.findByUserAndWeekNum(USER, 15))
+        .thenReturn(Optional.empty());
+
+    BookingLimit bookingLimit = BookingLimit.builder()
+        .user(USER)
+        .bookingLimit(10)
+        .weekNum(15)
+        .build();
+
+    Mockito.doReturn(bookingLimit).when(bookingLimitRepository).save(ArgumentMatchers.any());
+
+    BookingLimit actualLimit = timeSlotService.setBookingLimit(USER.getEmail(), 10);
+
+    assertNotNull(actualLimit);
+    Assertions.assertEquals(USER, bookingLimit.getUser());
   }
 }

@@ -80,12 +80,11 @@ public class BookingServiceTest {
         .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
     Mockito.when(candidateTimeSlotRepository.findById(1L))
         .thenReturn(Optional.of(CANDIDATE_TIME_SLOT));
-    Mockito.when(bookingLimitRepository.findByUser(ArgumentMatchers.any()))
-        .thenReturn(Optional.empty());
 
     bookingService.createBooking(BOOKING_DTO);
 
-    Mockito.verify(bookingRepository, Mockito.times(1)).save(bookingArgumentCaptor.capture());
+    Mockito.verify(bookingRepository, Mockito.times(1))
+        .save(bookingArgumentCaptor.capture());
     Mockito.verify(timeSlotValidationService, Mockito.times(1))
         .validateBookingTimeSlotBoundaries(BOOKING_DTO.getStartTime(), BOOKING_DTO.getEndTime());
 

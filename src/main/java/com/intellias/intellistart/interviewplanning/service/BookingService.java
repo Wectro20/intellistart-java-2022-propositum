@@ -1,20 +1,25 @@
 package com.intellias.intellistart.interviewplanning.service;
 
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.INVALID_BOUNDARIES;
+import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.MAX_COUNT_OF_BOOKING;
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.SUBJECT_DESCRIPTION_NOT_VALID;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
+import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepository;
 import com.intellias.intellistart.interviewplanning.repository.BookingRepository;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +43,8 @@ public class BookingService {
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
   private TimeSlotValidationService timeSlotValidationService;
+  private BookingLimitRepository bookingLimitRepository;
+  private GetWeekNumberService weekNumberService;
 
   /**
    * Create booking for interview.
@@ -51,6 +58,22 @@ public class BookingService {
     InterviewerTimeSlot interviewerTimeSlot = interviewerTimeSlotRepository
         .findById(bookingDto.getInterviewerTimeSlotId())
         .orElseThrow(SlotNotFoundException::new);
+
+    Optional<BookingLimit> interviewerLimit = bookingLimitRepository.findByUser(
+        interviewerTimeSlot.getUser());
+
+    List<Booking> currentInterviewerBookings = allInterviewerBookingsForCurrentWeek(
+        interviewerTimeSlot);
+
+    if (interviewerLimit.isPresent() && !currentInterviewerBookings.isEmpty()
+        && interviewerLimit.get().getBookingLimit() == currentInterviewerBookings.size()) {
+      log.error("Cannot set more booking for interviewer than max booking limit {}",
+          interviewerLimit.get().getBookingLimit());
+
+      throw new ValidationException(
+          String.format("cannot set more bookings for interviewer than max limit:%d",
+              interviewerLimit.get().getBookingLimit()), MAX_COUNT_OF_BOOKING);
+    }
 
     CandidateTimeSlot candidateTimeSlot = candidateTimeSlotRepository
         .findById(bookingDto.getCandidateTimeSlotId())
@@ -119,6 +142,17 @@ public class BookingService {
     return bookings.stream()
         .anyMatch(booking -> booking.getStartTime().equals(bookingDto.getStartTime())
             && booking.getEndTime().equals(bookingDto.getEndTime()));
+  }
+
+  private List<Booking> allInterviewerBookingsForCurrentWeek(
+      InterviewerTimeSlot interviewerTimeSlot) {
+    return
+        bookingRepository.findAllByInterviewerTimeSlotUser(
+                interviewerTimeSlot.getUser())
+            .stream()
+            .filter(
+                timeSlot -> timeSlot.getInterviewerTimeSlot().getWeekNum().equals(weekNumberService
+                    .getCurrentWeekNumber().getWeekNum())).collect(Collectors.toList());
   }
 
 }

@@ -19,6 +19,7 @@ import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,7 @@ public class BookingService {
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
   private TimeSlotValidationService timeSlotValidationService;
   private BookingLimitRepository bookingLimitRepository;
+  private GetWeekNumberService weekNumberService;
 
   /**
    * Create booking for interview.
@@ -60,9 +62,10 @@ public class BookingService {
     Optional<BookingLimit> interviewerLimit = bookingLimitRepository.findByUser(
         interviewerTimeSlot.getUser());
 
-    List<Booking> currentInterviewerBookings = interviewerTimeSlot.getBookings();
+    List<Booking> currentInterviewerBookings = allInterviewerBookingsForCurrentWeek(
+        interviewerTimeSlot);
 
-    if (interviewerLimit.isPresent()
+    if (interviewerLimit.isPresent() && !currentInterviewerBookings.isEmpty()
         && interviewerLimit.get().getBookingLimit() == currentInterviewerBookings.size()) {
       log.error("Cannot set more booking for interviewer than max booking limit {}",
           interviewerLimit.get().getBookingLimit());
@@ -76,7 +79,7 @@ public class BookingService {
         .findById(bookingDto.getCandidateTimeSlotId())
         .orElseThrow(SlotNotFoundException::new);
 
-    if (isBookingWithRangePresented(currentInterviewerBookings, bookingDto)) {
+    if (isBookingWithRangePresented(interviewerTimeSlot.getBookings(), bookingDto)) {
       log.error("Interviewer time slot with id {} already has booking with from/to",
           interviewerTimeSlot.getId());
 
@@ -139,6 +142,17 @@ public class BookingService {
     return bookings.stream()
         .anyMatch(booking -> booking.getStartTime().equals(bookingDto.getStartTime())
             && booking.getEndTime().equals(bookingDto.getEndTime()));
+  }
+
+  private List<Booking> allInterviewerBookingsForCurrentWeek(
+      InterviewerTimeSlot interviewerTimeSlot) {
+    return
+        bookingRepository.findAllByInterviewerTimeSlotUser(
+                interviewerTimeSlot.getUser())
+            .stream()
+            .filter(
+                timeSlot -> timeSlot.getInterviewerTimeSlot().getWeekNum().equals(weekNumberService
+                    .getCurrentWeekNumber().getWeekNum())).collect(Collectors.toList());
   }
 
 }

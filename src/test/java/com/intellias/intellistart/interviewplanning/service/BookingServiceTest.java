@@ -9,6 +9,7 @@ import com.intellias.intellistart.interviewplanning.exceptions.ValidationExcepti
 import com.intellias.intellistart.interviewplanning.model.Booking;
 import com.intellias.intellistart.interviewplanning.model.BookingLimit;
 import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.WeekNumber;
 import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
 import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.repository.BookingLimitRepository;
@@ -58,6 +59,8 @@ public class BookingServiceTest {
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
   @Mock
   private TimeSlotValidationService timeSlotValidationService;
+  @Mock
+  private GetWeekNumberService weekNumberService;
 
   @Captor
   private ArgumentCaptor<Booking> bookingArgumentCaptor;
@@ -68,7 +71,7 @@ public class BookingServiceTest {
   public void setUp() {
     bookingService = new BookingService(SUBJECT_LENGTH, DESCRIPTION_LENGTH, bookingRepository,
         interviewerTimeSlotRepository, candidateTimeSlotRepository, timeSlotValidationService,
-        bookingLimitRepository);
+        bookingLimitRepository, weekNumberService);
   }
 
   @Test
@@ -172,9 +175,12 @@ public class BookingServiceTest {
     Mockito.when(interviewerTimeSlotRepository.findById(1L))
         .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT_WITH_BOOKINGS));
     Mockito.when(bookingLimitRepository.findByUser(ArgumentMatchers.any()))
-        .thenReturn(Optional.ofNullable(BOOKING_LIMIT));
+        .thenReturn(Optional.of(BOOKING_LIMIT));
+    Mockito.when(bookingRepository.findAllByInterviewerTimeSlotUser(ArgumentMatchers.any()))
+        .thenReturn(List.of(generateBooking(), generateBooking()));
+    Mockito.when(weekNumberService.getCurrentWeekNumber()).thenReturn(new WeekNumber(15));
 
-    assertThrows(ValidationException.class, ()-> bookingService.createBooking(BOOKING_DTO));
+    assertThrows(ValidationException.class, () -> bookingService.createBooking(BOOKING_DTO));
   }
 
   private static Stream<Arguments> outOfRangeTimeValues() {

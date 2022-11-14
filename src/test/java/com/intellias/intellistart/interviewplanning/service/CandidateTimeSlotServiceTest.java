@@ -40,7 +40,7 @@ class CandidateTimeSlotServiceTest {
   private static final String userEmail = "user@gmail.com";
   private static final User user = new User(1L, userEmail, UserRole.CANDIDATE);
   private static final CandidateTimeSlot candidateTimeSlot = CandidateTimeSlot.builder()
-      .date(LocalDate.of(2022, 11, 10))
+      .date(LocalDate.of(2022, 12, 16))
       .from(LocalTime.of(9, 0))
       .to(LocalTime.of(17, 0))
       .slotStatus(TimeSlotStatus.NEW)
@@ -58,13 +58,13 @@ class CandidateTimeSlotServiceTest {
 
     var slot = candidateTimeSlotService.createSlot(
         userEmail,
-        LocalDate.of(2022, 11, 10),
+        LocalDate.of(2022, 12, 16),
         LocalTime.of(9, 0), // 09:00
         LocalTime.of(17, 0) // 17:00
     );
 
     assertNotNull(slot);
-    assertEquals(LocalDate.of(2022, 11, 10), slot.getDate());
+    assertEquals(LocalDate.of(2022, 12, 16), slot.getDate());
     assertEquals(LocalTime.of(9, 0), slot.getFrom());
     assertEquals(LocalTime.of(17, 0), slot.getTo());
     assertEquals(TimeSlotStatus.NEW, slot.getSlotStatus());
@@ -76,12 +76,12 @@ class CandidateTimeSlotServiceTest {
 
     InvalidDayOfWeekException exception = assertThrows(
         InvalidDayOfWeekException.class, () -> candidateTimeSlotService.createSlot(userEmail,
-            LocalDate.of(2022, 11, 12),
+            LocalDate.of(2022, 12, 10),
             LocalTime.of(17, 0), // 09:00
             LocalTime.of(9, 0) // 17:00
         ));
 
-    assertEquals("2022-11-12", exception.getMessage());
+    assertEquals("2022-12-10", exception.getMessage());
   }
 
   @Test
@@ -91,7 +91,7 @@ class CandidateTimeSlotServiceTest {
     InvalidTimeSlotBoundariesException exception = assertThrows(
         InvalidTimeSlotBoundariesException.class,
         () -> candidateTimeSlotService.createSlot(userEmail,
-            LocalDate.of(2022, 11, 10),
+            LocalDate.of(2022, 12, 16),
             LocalTime.of(9, 2), // 09:00
             LocalTime.of(17, 0) // 17:00
         ));
@@ -106,7 +106,7 @@ class CandidateTimeSlotServiceTest {
     InvalidTimeSlotBoundariesException exception = assertThrows(
         InvalidTimeSlotBoundariesException.class,
         () -> candidateTimeSlotService.createSlot(userEmail,
-            LocalDate.of(2022, 11, 10),
+            LocalDate.of(2022, 12, 16),
             LocalTime.of(17, 0), // 09:00
             LocalTime.of(9, 0) // 17:00
         ));
@@ -119,7 +119,7 @@ class CandidateTimeSlotServiceTest {
   void createSlotWhichOverlapsAndThrowException() {
     CandidateTimeSlot candidateTimeSlot = CandidateTimeSlot.builder()
         .id(2L)
-        .date(LocalDate.of(2022, 11, 10))
+        .date(LocalDate.of(2022, 12, 16))
         .from(LocalTime.of(9, 0))
         .to(LocalTime.of(17, 0))
         .slotStatus(TimeSlotStatus.NEW)

@@ -55,8 +55,24 @@ public class InterviewerTimeSlotController {
   public InterviewerTimeSlot updateSlot(@PathVariable Long slotId,
       @RequestBody InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
     return interviewerTimeSlotService.updateSlot(SecurityUtil.getCurrentPrincipal().getEmail(),
-        slotId, interviewerTimeSlotRequestForm);
+        slotId, interviewerTimeSlotRequestForm, SecurityUtil.getCurrentPrincipal().getUser());
+  }
 
+
+  /**
+   * Endpoint to update time slot for Interviewer.
+   *
+   * @param slotId              for which update
+   * @param interviewerTimeSlotRequestForm request body of time slot
+   * @return updated interviewer time slot
+   */
+  @PostMapping("/interviewers/{interviewerEmail}/slots/{slotId}")
+  @PreAuthorize("hasAuthority('COORDINATOR')")
+  public InterviewerTimeSlot updateSlotByCoordinator(@PathVariable Long slotId,
+      @PathVariable String interviewerEmail,
+      @RequestBody InterviewerTimeSlotRequestForm interviewerTimeSlotRequestForm) {
+    return interviewerTimeSlotService.updateSlot(interviewerEmail,
+        slotId, interviewerTimeSlotRequestForm, SecurityUtil.getCurrentPrincipal().getUser());
   }
 
   /**
@@ -76,16 +92,16 @@ public class InterviewerTimeSlotController {
   /**
    * Endpoint to set booking limit Interviewer.
    *
-   * @param interviewerId for which limit to set
+   * @param interviewerEmail for which limit to set
    * @param bookingLimit  for define the value of limit
    * @return booking limit
    */
-  @PostMapping("/interviewers/{interviewerId}/limit")
+  @PostMapping("/interviewers/{interviewerEmail}/limit")
   @PreAuthorize("hasAuthority('INTERVIEWER')")
-  public ResponseEntity<BookingLimit> setBookingLimit(@PathVariable Long interviewerId,
+  public ResponseEntity<BookingLimit> setBookingLimit(@PathVariable String interviewerEmail,
       @RequestParam Integer bookingLimit) {
     return new ResponseEntity<>(interviewerTimeSlotService
-        .setBookingLimit(interviewerId, bookingLimit), HttpStatus.OK);
+        .setBookingLimit(interviewerEmail, bookingLimit), HttpStatus.OK);
   }
 
 }

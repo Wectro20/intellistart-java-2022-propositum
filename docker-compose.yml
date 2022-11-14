@@ -33,7 +33,7 @@ services:
           "working_hours.to" : "22:00",
           "booking.subject_length" : "250",
           "booking.description_length" : "4000",
-          "jwt.secret" : "",
+          "jwt.secret" : "$JWT",
           "spring.datasource.url" : "jdbc:mysql://db:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE",
           "spring.datasource.username" : "$MYSQLDB_USER",
           "spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD",

@@ -21,6 +21,7 @@ public class ApplicationExceptionHandler {
   private static final String USER_NOT_FOUND = "user_not_found";
   private static final String SLOT_IS_OVERLAPPING = "slot_is_overlapping";
   private static final String BOOKING_IS_OVERLAPPING = "booking_is_overlapping";
+  public static final String MAX_COUNT_OF_BOOKING = "max_count_of_booking";
   public static final String INVALID_BOUNDARIES = "invalid_boundaries";
   public static final String SUBJECT_DESCRIPTION_NOT_VALID = "subject_or_description_not_valid";
   private static final String INVALID_DAY_OF_WEEK = "invalid_day_of_week";

@@ -4,7 +4,6 @@ import static com.intellias.intellistart.interviewplanning.exceptions.Applicatio
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.SUBJECT_DESCRIPTION_NOT_VALID;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
-import com.intellias.intellistart.interviewplanning.exceptions.BookingNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
@@ -13,7 +12,6 @@ import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSl
 import com.intellias.intellistart.interviewplanning.repository.BookingRepository;
 import com.intellias.intellistart.interviewplanning.repository.CandidateTimeSlotRepository;
 import com.intellias.intellistart.interviewplanning.repository.InterviewerTimeSlotRepository;
-import com.intellias.intellistart.interviewplanning.service.dto.BookingChangeRequestForm;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import java.time.LocalTime;
 import java.util.List;
@@ -40,6 +38,8 @@ public class BookingService {
   private InterviewerTimeSlotRepository interviewerTimeSlotRepository;
   private CandidateTimeSlotRepository candidateTimeSlotRepository;
   private TimeSlotValidationService timeSlotValidationService;
+  private BookingLimitRepository bookingLimitRepository;
+  private GetWeekNumberService weekNumberService;
 
   /**
    * Create booking for interview.
@@ -123,6 +123,18 @@ public class BookingService {
             && booking.getEndTime().equals(bookingDto.getEndTime()));
   }
 
+  private List<Booking> allInterviewerBookingsForCurrentWeek(
+      InterviewerTimeSlot interviewerTimeSlot) {
+    return
+        bookingRepository.findAllByInterviewerTimeSlotUser(
+                interviewerTimeSlot.getUser())
+            .stream()
+            .filter(
+                timeSlot -> timeSlot.getInterviewerTimeSlot().getWeekNum().equals(weekNumberService
+                    .getCurrentWeekNumber().getWeekNum())).collect(Collectors.toList());
+  }
+
+}
 
 
   /**

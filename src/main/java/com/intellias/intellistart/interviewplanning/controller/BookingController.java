@@ -1,8 +1,6 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
-import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.service.BookingService;
-import com.intellias.intellistart.interviewplanning.service.dto.BookingChangeRequestForm;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,7 +40,7 @@ public class BookingController {
   * Endpoint to update booking for interview.
   *
   * @param bookingId id of booking
-  * @param bookingChangeRequestForm request body of booking.
+  * @param bookingDto request body of booking.
   *
   * @return updated booking.
   */
@@ -50,9 +48,9 @@ public class BookingController {
   @PostMapping("/bookings/{bookingId}")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasAuthority('COORDINATOR')")
-  public BookingDto updateBooking(@RequestBody BookingChangeRequestForm bookingChangeRequestForm,
+  public BookingDto updateBooking(@RequestBody BookingDto bookingDto,
       @PathVariable Long bookingId) {
-    return bookingService.updateBooking(bookingId, bookingChangeRequestForm);
+    return bookingService.updateBooking(bookingId, bookingDto);
   }
 
 }

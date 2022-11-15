@@ -1,8 +1,13 @@
 package com.intellias.intellistart.interviewplanning.service;
 
+import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.INVALID_BOUNDARIES;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
+import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
+import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
+import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,5 +72,45 @@ public class TimeSlotValidationService {
 
   private boolean isNotRoundedTime(LocalTime time) {
     return !(time.getMinute() == 30 || time.getMinute() == 0);
+  }
+
+  /**
+   * Validate time slot boundaries.
+   *
+   * @param bookingDto          Dto with time for validation
+   * @param interviewerTimeSlot time slot in which time should cover the time of bookingDto
+   * @param candidateTimeSlot   time slot in which time should cover the time of bookingDto
+   */
+  public boolean validateBookingTimeBoundariesInTimeSlots(BookingDto bookingDto,
+      InterviewerTimeSlot interviewerTimeSlot,
+      CandidateTimeSlot candidateTimeSlot) {
+
+    if (isTimeNotInInterviewerSlotRange(interviewerTimeSlot,
+        bookingDto.getStartTime())
+        || isTimeNotInInterviewerSlotRange(interviewerTimeSlot,
+        bookingDto.getEndTime())) {
+
+      throw new ValidationException("from/to does not fit into interviewer time slot",
+          INVALID_BOUNDARIES);
+    }
+
+    if (isTimeNotInCandidateSlotRange(candidateTimeSlot,
+        bookingDto.getStartTime())
+        || isTimeNotInCandidateSlotRange(candidateTimeSlot,
+        bookingDto.getEndTime())) {
+
+      throw new ValidationException("from/to does not fit into bounded candidate time slot",
+          INVALID_BOUNDARIES);
+    }
+
+    return true;
+  }
+
+  private boolean isTimeNotInCandidateSlotRange(CandidateTimeSlot timeSlot, LocalTime target) {
+    return target.isBefore(timeSlot.getFrom()) || target.isAfter(timeSlot.getTo());
+  }
+
+  private boolean isTimeNotInInterviewerSlotRange(InterviewerTimeSlot timeSlot, LocalTime target) {
+    return target.isBefore(timeSlot.getFrom()) || target.isAfter(timeSlot.getTo());
   }
 }

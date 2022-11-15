@@ -166,7 +166,6 @@ public class BookingServiceTest {
         .thenReturn(Optional.empty());
 
     assertThrows(ValidationException.class, () -> bookingService.createBooking(bookingDto));
-
   }
 
   @Test
@@ -182,11 +181,78 @@ public class BookingServiceTest {
     assertThrows(ValidationException.class, () -> bookingService.createBooking(BOOKING_DTO));
   }
 
-  private static Stream<Arguments> outOfRangeTimeValues() {
-    return Stream.of(Arguments.of(LocalTime.of(12, 0), LocalTime.of(13, 30)),
-        Arguments.of(LocalTime.of(10, 30), LocalTime.of(12, 0)),
-        Arguments.of(LocalTime.of(9, 30), LocalTime.of(11, 0)));
+  @Test
+  public void updateBooking_Should_Successfully_Update_Booking() {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.of(generateBooking()));
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
+    Mockito.when(candidateTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(CANDIDATE_TIME_SLOT));
+
+    BookingDto result = generateBookingDto();
+    result.setId(1L);
+    assertEquals(result,
+        bookingService.updateBooking(1L, generateBookingDto()));
+
+    Mockito.verify(bookingRepository, Mockito.times(1))
+        .save(bookingArgumentCaptor.capture());
+
+    Booking actualBooking = bookingArgumentCaptor.getValue();
+
+    assertEquals(BOOKING.getStartTime(), actualBooking.getStartTime());
+    assertEquals(BOOKING.getEndTime(), actualBooking.getEndTime());
+    assertEquals(BOOKING.getCandidateTimeSlot(), actualBooking.getCandidateTimeSlot());
+    assertEquals(BOOKING.getInterviewerTimeSlot(), actualBooking.getInterviewerTimeSlot());
+    assertEquals(BOOKING.getSubject(), actualBooking.getSubject());
+    assertEquals(BOOKING.getDescription(), actualBooking.getDescription());
   }
+
+  @ParameterizedTest
+  @MethodSource("outOfRangeTimeValues")
+  public void updateBooking_Should_Throw_ValidationException(
+        LocalTime from, LocalTime to) {
+    BookingDto bookingDto = generateBookingDto();
+    bookingDto.setStartTime(from);
+    bookingDto.setEndTime(to);
+
+    Mockito.when(bookingRepository.findById(1L))
+      .thenReturn(Optional.of(generateBooking()));
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
+    Mockito.when(candidateTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(CANDIDATE_TIME_SLOT));
+    Mockito.when(bookingLimitRepository.findByUser(ArgumentMatchers.any()))
+        .thenReturn(Optional.empty());
+    Mockito.when(timeSlotValidationService.validateBookingTimeBoundariesInTimeSlots(bookingDto,
+            INTERVIEWER_TIME_SLOT,
+            CANDIDATE_TIME_SLOT))
+        .thenThrow(ValidationException.class)
+        .thenReturn(false);
+
+    assertThrows(ValidationException.class,
+        () -> bookingService.updateBooking(1L, bookingDto));
+  }
+
+  @Test
+  public void updateBooking_Should_Throw_SlotNotFoundException1() {
+    Mockito.when(interviewerTimeSlotRepository.findById(1L)).thenReturn(Optional.empty());
+    assertThrows(SlotNotFoundException.class, () -> bookingService.updateBooking(1L, BOOKING_DTO));
+  }
+
+  @Test
+  public void updateBooking_Should_Throw_SlotNotFoundException2() {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.of(generateBooking()));
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
+    Mockito.when(candidateTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.empty());
+    assertThrows(SlotNotFoundException.class, () -> bookingService.updateBooking(1L, BOOKING_DTO));
+  }
+
+
+
 
 
   private static BookingDto generateBookingDto() {
@@ -198,6 +264,12 @@ public class BookingServiceTest {
   private static InterviewerTimeSlot generateInterviewerSlot() {
     return InterviewerTimeSlot.builder().from(LocalTime.of(10, 0)).to(LocalTime.of(11, 30))
         .dayOfWeek(InterviewDayOfWeek.MONDAY).weekNum(15).bookings(Collections.emptyList()).build();
+  }
+
+  private static Stream<Arguments> outOfRangeTimeValues() {
+    return Stream.of(Arguments.of(LocalTime.of(12, 0), LocalTime.of(13, 30)),
+        Arguments.of(LocalTime.of(10, 30), LocalTime.of(12, 0)),
+        Arguments.of(LocalTime.of(9, 30), LocalTime.of(11, 0)));
   }
 
   private static InterviewerTimeSlot generateInterviewerTimeSlotWithTwoBookings() {

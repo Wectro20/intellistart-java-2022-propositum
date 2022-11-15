@@ -1,5 +1,6 @@
 package com.intellias.intellistart.interviewplanning.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -293,6 +294,20 @@ public class BookingServiceTest {
 
     assertThrows(ValidationException.class,
         () -> bookingService.updateBooking(1L, bookingDto));
+  }
+
+  @Test
+  public void deleteBooking_Should_Successfully_Delete() {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.of(generateBooking()));
+    assertDoesNotThrow(() -> bookingService.deleteBooking(1L));
+  }
+
+  @Test
+  public void deleteBooking_Should_Throw_BookingNotFoundException() {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.empty());
+    assertThrows(BookingNotFoundException.class, () -> bookingService.deleteBooking(1L));
   }
 
 

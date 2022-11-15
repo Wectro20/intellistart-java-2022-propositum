@@ -306,6 +306,24 @@ public class BookingService {
 
     return true;
   }
+
+
+
+
+  /**
+   * Delete booking.
+   *
+   * @param bookingId id of the booking which needs to delete.
+   *
+   *
+   */
+  public void deleteBooking(Long bookingId) {
+    Booking outdatedBooking = bookingRepository
+        .findById(bookingId)
+        .orElseThrow(BookingNotFoundException::new);
+
+    bookingRepository.delete(outdatedBooking);
+  }
 }
 
 

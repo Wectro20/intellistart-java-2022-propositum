@@ -4,7 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.intellias.intellistart.interviewplanning.exceptions.InvalidTimeSlotBoundariesException;
+import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
+import com.intellias.intellistart.interviewplanning.model.InterviewDayOfWeek;
+import com.intellias.intellistart.interviewplanning.model.slot.CandidateTimeSlot;
+import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
+import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -101,4 +108,42 @@ public class TimeSlotValidationServiceTest {
     assertEquals(expectedErrorMessage, exception.getMessage());
   }
 
+
+  @Test
+  public void validateBookingTimeBoundariesInTimeSlots_Should_Successfully_Validate() {
+    assertEquals(true, timeSlotValidationService.validateBookingTimeBoundariesInTimeSlots(
+        generateBookingDto(),
+        generateInterviewerSlot(),
+        generateCandidateSlot()));
+  }
+
+  @Test
+  public void validateBookingTimeBoundariesInTimeSlots_Should_Throw_ValidationException() {
+    InterviewerTimeSlot interviewerTimeSlot = generateInterviewerSlot();
+    interviewerTimeSlot.setTo(LocalTime.of(10, 30));
+    interviewerTimeSlot.setFrom(LocalTime.of(8, 30));
+
+
+    assertThrows(ValidationException.class,
+        () -> timeSlotValidationService.validateBookingTimeBoundariesInTimeSlots(
+        generateBookingDto(),
+        interviewerTimeSlot,
+        generateCandidateSlot()));
+  }
+
+  private static InterviewerTimeSlot generateInterviewerSlot() {
+    return InterviewerTimeSlot.builder().from(LocalTime.of(10, 0)).to(LocalTime.of(11, 30))
+        .dayOfWeek(InterviewDayOfWeek.MONDAY).weekNum(15).bookings(Collections.emptyList()).build();
+  }
+
+  private static CandidateTimeSlot generateCandidateSlot() {
+    return CandidateTimeSlot.builder().date(LocalDate.of(2022, 10, 25)).from(LocalTime.of(10, 0))
+        .to(LocalTime.of(11, 30)).bookings(Collections.emptyList()).build();
+  }
+
+  private static BookingDto generateBookingDto() {
+    return BookingDto.builder().startTime(LocalTime.of(10, 0)).endTime(LocalTime.of(11, 30))
+        .candidateTimeSlotId(1L).interviewerTimeSlotId(1L).subject("Interview")
+        .description("Interview for candidate").build();
+  }
 }

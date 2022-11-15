@@ -284,7 +284,15 @@ public class BookingService {
         || booking.getEndTime().equals(endTarget)));
   }
 
-  private void validateDescriptionAndSubject(String description, String subject) {
+  /**
+  * For validation description and subject.
+  *
+  * @param description description for validation
+  * @param subject  subject for validation
+  *
+  *
+  */
+  public boolean validateDescriptionAndSubject(String description, String subject) {
     if (subject.length() > subjectLength) {
       throw new ValidationException("subject max length is " + subjectLength + " chars",
           SUBJECT_DESCRIPTION_NOT_VALID);
@@ -295,6 +303,8 @@ public class BookingService {
           "description max length is " + descriptionLength + " chars",
           SUBJECT_DESCRIPTION_NOT_VALID);
     }
+
+    return true;
   }
 }
 

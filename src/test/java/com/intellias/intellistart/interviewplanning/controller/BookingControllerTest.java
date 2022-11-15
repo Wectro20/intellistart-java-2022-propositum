@@ -121,4 +121,28 @@ class BookingControllerTest {
         .andExpect(MockMvcResultMatchers.status().isCreated())
         .andExpect(MockMvcResultMatchers.content().string(responseBooking));
   }
+
+  @Test
+  @WithMockUser(authorities = "COORDINATOR")
+  public void sendPostMethodToUpdateBookingAndRetrieveStatusOk() throws Exception {
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
+    Mockito.when(candidateTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(CANDIDATE_TIME_SLOT));
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.of(BOOKING));
+    Mockito.when(bookingRepository.save(BOOKING))
+        .thenReturn(BOOKING);
+    String requestBooking = objectMapper.writeValueAsString(BOOKING_DTO);
+    BOOKING_DTO.setId(1L);
+    String responseBooking = objectMapper.writeValueAsString(BOOKING_DTO);
+    this.mockMvc.perform(MockMvcRequestBuilders.post(POST_BOOKING_URL + "/1")
+            .with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+            .content(requestBooking)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().string(responseBooking));
+  }
+
 }

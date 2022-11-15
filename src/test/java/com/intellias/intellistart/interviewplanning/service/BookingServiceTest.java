@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
+import com.intellias.intellistart.interviewplanning.exceptions.BookingNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
@@ -210,7 +211,7 @@ public class BookingServiceTest {
 
   @ParameterizedTest
   @MethodSource("outOfRangeTimeValues")
-  public void updateBooking_Should_Throw_ValidationException(
+  public void updateBooking_Should_Throw_ValidationException1(
         LocalTime from, LocalTime to) {
     BookingDto bookingDto = generateBookingDto();
     bookingDto.setStartTime(from);
@@ -252,6 +253,47 @@ public class BookingServiceTest {
   }
 
 
+  @Test
+  public void updateBooking_Should_Throw_BookingNotFoundException() {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.empty());
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
+
+    assertThrows(BookingNotFoundException.class, () -> bookingService.updateBooking(1L, BOOKING_DTO));
+  }
+
+
+  @Test
+  public void updateBooking_Should_Throw_ValidationException2() {
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT_WITH_BOOKINGS));
+    Mockito.when(bookingLimitRepository.findByUser(ArgumentMatchers.any()))
+        .thenReturn(Optional.of(BOOKING_LIMIT));
+    Mockito.when(bookingRepository.findAllByInterviewerTimeSlotUser(ArgumentMatchers.any()))
+        .thenReturn(List.of(generateBooking(), generateBooking()));
+    Mockito.when(weekNumberService.getCurrentWeekNumber()).thenReturn(new WeekNumber(15));
+
+    assertThrows(ValidationException.class, () -> bookingService.updateBooking(1L, BOOKING_DTO));
+  }
+
+  @Test
+  public void updateBooking_Should_Throw_ValidationException3() {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.of(generateBooking()));
+    Mockito.when(interviewerTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(INTERVIEWER_TIME_SLOT));
+    Mockito.when(candidateTimeSlotRepository.findById(1L))
+        .thenReturn(Optional.of(CANDIDATE_TIME_SLOT));
+    Mockito.when(bookingLimitRepository.findByUser(ArgumentMatchers.any()))
+        .thenReturn(Optional.empty());
+
+    BookingDto bookingDto = generateBookingDto();
+    bookingDto.setDescription("*".repeat(2000));
+
+    assertThrows(ValidationException.class,
+        () -> bookingService.updateBooking(1L, bookingDto));
+  }
 
 
 

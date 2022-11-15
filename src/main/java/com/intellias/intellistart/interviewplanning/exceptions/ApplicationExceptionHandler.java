@@ -32,6 +32,8 @@ public class ApplicationExceptionHandler {
   private static final String INVALID_LIMIT = "invalid_limit";
   private static final String INVALID_ACCESS_TOKEN = "invalid_access_token";
 
+  private static final String BOOKING_NOT_FOUND = "booking_not_found";
+
   @ResponseBody
   @ResponseStatus(value = HttpStatus.CONFLICT)
   @ExceptionHandler(WeekNumberNotAcceptableException.class)
@@ -54,6 +56,16 @@ public class ApplicationExceptionHandler {
   @ExceptionHandler(InterviewerNotFoundException.class)
   public ErrorResponse handleInterviewerNotFoundException() {
     return new ErrorResponse(INTERVIEWER_NOT_FOUND, "interviewer was not found");
+  }
+
+  /**
+   * Exception handler for BookingNotFoundException.
+   */
+  @ResponseBody
+  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(BookingNotFoundException.class)
+  public ErrorResponse handleBookingNotFoundException() {
+    return new ErrorResponse(BOOKING_NOT_FOUND, "booking was not found");
   }
 
 

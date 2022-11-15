@@ -1,6 +1,5 @@
 package com.intellias.intellistart.interviewplanning.controller;
 
-import com.intellias.intellistart.interviewplanning.model.slot.InterviewerTimeSlot;
 import com.intellias.intellistart.interviewplanning.service.BookingService;
 import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import lombok.AllArgsConstructor;
@@ -36,4 +35,22 @@ public class BookingController {
   public BookingDto createBooking(@RequestBody BookingDto bookingDto) {
     return bookingService.createBooking(bookingDto);
   }
+
+  /**
+  * Endpoint to update booking for interview.
+  *
+  * @param bookingId id of booking
+  * @param bookingDto request body of booking.
+  *
+  * @return updated booking.
+  */
+
+  @PostMapping("/bookings/{bookingId}")
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasAuthority('COORDINATOR')")
+  public BookingDto updateBooking(@RequestBody BookingDto bookingDto,
+      @PathVariable Long bookingId) {
+    return bookingService.updateBooking(bookingId, bookingDto);
+  }
+
 }

@@ -5,6 +5,7 @@ import static com.intellias.intellistart.interviewplanning.exceptions.Applicatio
 import static com.intellias.intellistart.interviewplanning.exceptions.ApplicationExceptionHandler.SUBJECT_DESCRIPTION_NOT_VALID;
 
 import com.intellias.intellistart.interviewplanning.exceptions.BookingIsAlreadyExistsException;
+import com.intellias.intellistart.interviewplanning.exceptions.BookingNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.SlotNotFoundException;
 import com.intellias.intellistart.interviewplanning.exceptions.ValidationException;
 import com.intellias.intellistart.interviewplanning.model.Booking;
@@ -155,4 +156,158 @@ public class BookingService {
                     .getCurrentWeekNumber().getWeekNum())).collect(Collectors.toList());
   }
 
+  /**
+   * Update booking for interview.
+   *
+   * @param bookingId id of the booking which needs to update.
+   * @param bookingDto the body of the booking which needs to update.
+   *
+   * @return saved booking
+   */
+  public BookingDto updateBooking(Long bookingId,
+      BookingDto bookingDto) {
+    log.info("Update booking with details {}", bookingDto);
+
+    InterviewerTimeSlot interviewerTimeSlot = interviewerTimeSlotRepository
+        .findById(bookingDto.getInterviewerTimeSlotId())
+        .orElseThrow(SlotNotFoundException::new);
+
+    Optional<BookingLimit> interviewerLimit = bookingLimitRepository.findByUser(
+        interviewerTimeSlot.getUser());
+
+    List<Booking> currentInterviewerBookings = allInterviewerBookingsForCurrentWeek(
+        interviewerTimeSlot);
+
+    if (interviewerLimit.isPresent() && !currentInterviewerBookings.isEmpty()
+        && interviewerLimit.get().getBookingLimit() == currentInterviewerBookings.size()) {
+      log.error("Cannot set more booking for interviewer than max booking limit {}",
+          interviewerLimit.get().getBookingLimit());
+
+      throw new ValidationException(
+          String.format("cannot set more bookings for interviewer than max limit:%d",
+              interviewerLimit.get().getBookingLimit()), MAX_COUNT_OF_BOOKING);
+    }
+
+    Booking outdatedBooking = bookingRepository
+        .findById(bookingId)
+        .orElseThrow(BookingNotFoundException::new);
+
+    CandidateTimeSlot candidateTimeSlot = candidateTimeSlotRepository
+        .findById(bookingDto.getCandidateTimeSlotId())
+        .orElseThrow(SlotNotFoundException::new);
+
+    timeSlotValidationService
+        .validateBookingTimeBoundariesInTimeSlots(
+            bookingDto,
+            interviewerTimeSlot,
+            candidateTimeSlot);
+
+    timeSlotValidationService
+        .validateBookingTimeSlotBoundaries(bookingDto.getStartTime(),
+          bookingDto.getEndTime());
+
+    validateBookingInInterviewerTimeSlot(bookingDto, candidateTimeSlot, interviewerTimeSlot,
+        outdatedBooking);
+
+    validateBookingInCandidateTimeSlot(bookingDto, candidateTimeSlot, outdatedBooking);
+
+    validateDescriptionAndSubject(bookingDto.getDescription(), bookingDto.getSubject());
+
+
+    outdatedBooking.setCandidateTimeSlot(candidateTimeSlot);
+    outdatedBooking.setInterviewerTimeSlot(interviewerTimeSlot);
+    outdatedBooking.setStartTime(bookingDto.getStartTime());
+    outdatedBooking.setEndTime(bookingDto.getEndTime());
+    outdatedBooking.setSubject(bookingDto.getSubject());
+    outdatedBooking.setDescription(bookingDto.getDescription());
+    bookingRepository.save(outdatedBooking);
+    log.info("Booking successfully updated with id {}", bookingId);
+
+
+    bookingDto.setId(bookingId);
+    return bookingDto;
+  }
+
+  private void validateBookingInCandidateTimeSlot(
+      BookingDto bookingDto,
+      CandidateTimeSlot candidateTimeSlot,
+      Booking outdatedBooking) {
+
+
+    List<Booking> bookings = candidateTimeSlot.getBookings();
+
+    bookings.remove(outdatedBooking);
+
+    if (bookings.stream()
+        .filter(booking -> booking.getCandidateTimeSlot().getDate()
+            .equals(candidateTimeSlot.getDate()))
+        .anyMatch(booking -> validateBookingTime(booking, bookingDto))) {
+      throw new ValidationException(
+          "already exist booking that intersect given from/to in candidate",
+             INVALID_BOUNDARIES);
+    }
+  }
+
+  private void validateBookingInInterviewerTimeSlot(
+      BookingDto bookingDto,
+      CandidateTimeSlot candidateTimeSlot,
+      InterviewerTimeSlot interviewerTimeSlot,
+      Booking outdatedBooking) {
+
+    List<Booking> bookings = interviewerTimeSlot
+        .getBookings();
+
+    bookings.remove(outdatedBooking);
+
+    if (bookings.stream()
+        .filter(booking -> booking.getCandidateTimeSlot().getDate()
+            .equals(candidateTimeSlot.getDate()))
+        .anyMatch(booking -> validateBookingTime(booking, bookingDto))) {
+      throw new ValidationException(
+          "already exist booking that intersect given from/to in interviewer",
+          INVALID_BOUNDARIES);
+    }
+  }
+
+  private boolean validateBookingTime(Booking booking,
+      BookingDto bookingDto) {
+    LocalTime startTarget = bookingDto.getStartTime();
+    LocalTime endTarget = bookingDto.getEndTime();
+
+    return ((booking.getStartTime().isBefore(startTarget)
+        || booking.getStartTime().equals(startTarget))
+        && (booking.getEndTime().isAfter(startTarget)
+        || booking.getEndTime().equals(startTarget)))
+        || ((booking.getStartTime().isBefore(endTarget)
+        || (booking.getStartTime().equals(endTarget)))
+        && (booking.getEndTime().isAfter(endTarget)
+        || booking.getEndTime().equals(endTarget)));
+  }
+
+  /**
+  * For validation description and subject.
+  *
+  * @param description description for validation
+  * @param subject  subject for validation
+  *
+  *
+  */
+  public boolean validateDescriptionAndSubject(String description, String subject) {
+    if (subject.length() > subjectLength) {
+      throw new ValidationException("subject max length is " + subjectLength + " chars",
+          SUBJECT_DESCRIPTION_NOT_VALID);
+    }
+
+    if (description.length() > descriptionLength) {
+      throw new ValidationException(
+          "description max length is " + descriptionLength + " chars",
+          SUBJECT_DESCRIPTION_NOT_VALID);
+    }
+
+    return true;
+  }
 }
+
+
+
+

@@ -145,4 +145,17 @@ class BookingControllerTest {
         .andExpect(MockMvcResultMatchers.content().string(responseBooking));
   }
 
+
+  @Test
+  @WithMockUser(authorities = "COORDINATOR")
+  public void sendDeleteMethodToDeleteBookingAndRetrieveStatusOk() throws Exception {
+    Mockito.when(bookingRepository.findById(1L))
+        .thenReturn(Optional.of(BOOKING));
+    this.mockMvc.perform(MockMvcRequestBuilders.delete(POST_BOOKING_URL + "/1")
+            .with(SecurityMockMvcRequestPostProcessors.user(userDetails))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+  }
+
 }

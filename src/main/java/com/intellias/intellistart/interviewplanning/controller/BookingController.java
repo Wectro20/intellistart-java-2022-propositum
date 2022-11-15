@@ -5,6 +5,7 @@ import com.intellias.intellistart.interviewplanning.service.dto.BookingDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,4 +54,16 @@ public class BookingController {
     return bookingService.updateBooking(bookingId, bookingDto);
   }
 
+  /**
+   * Endpoint to delete booking.
+   *
+   * @param bookingId id of booking
+   *
+   */
+  @DeleteMapping("/bookings/{bookingId}")
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("hasAuthority('COORDINATOR')")
+  public void deleteBooking(@PathVariable Long bookingId) {
+    bookingService.deleteBooking(bookingId);
+  }
 }

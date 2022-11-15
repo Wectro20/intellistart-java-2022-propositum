@@ -75,7 +75,7 @@ public class TimeSlotValidationService {
   }
 
   /**
-   * Validate time slot boundaries.
+   * Validate booking boundaries in time slots.
    *
    * @param bookingDto          Dto with time for validation
    * @param interviewerTimeSlot time slot in which time should cover the time of bookingDto

@@ -157,7 +157,7 @@ public class BookingService {
   }
 
   /**
-   * Create booking for interview.
+   * Update booking for interview.
    *
    * @param bookingId id of the booking which needs to update.
    * @param bookingDto the body of the booking which needs to update.

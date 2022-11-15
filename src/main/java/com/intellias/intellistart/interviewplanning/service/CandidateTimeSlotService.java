@@ -73,6 +73,8 @@ public class CandidateTimeSlotService {
     CandidateTimeSlot candidateTimeSlot = candidateTimeSlotRepository
         .findById(id)
         .orElseThrow(SlotNotFoundException::new);
+    validateSlotIsNotOverlapping(candidateTimeSlot.getEmail(), newSlotValue.getDate(),
+            newSlotValue.getFrom(), newSlotValue.getTo());
     candidateTimeSlot.setDate(newSlotValue.getDate());
     candidateTimeSlot.setFrom(newSlotValue.getFrom());
     candidateTimeSlot.setTo(newSlotValue.getTo());
@@ -124,24 +126,21 @@ public class CandidateTimeSlotService {
    * @param date           available date for time slot
    * @param start          start time of time slot
    * @param end            end time of time slot
-   * @return candidate
    */
-  // TODO: Implement necessary validation of time slot overlapping logic
-  private boolean validateSlotIsNotOverlapping(String candidateEmail,
-      LocalDate date, LocalTime start, LocalTime end) {
-    List<CandidateTimeSlot> slotList = candidateTimeSlotRepository.findByEmail(candidateEmail);
+  private void validateSlotIsNotOverlapping(String candidateEmail,
+                                            LocalDate date, LocalTime start, LocalTime end) {
+    List<CandidateTimeSlot> slotList = candidateTimeSlotRepository
+            .findByDateAndEmail(date, candidateEmail);
 
     Optional<CandidateTimeSlot> overlappingSlot = slotList
         .stream()
-        .filter(candidateTimeSlot ->
-            candidateTimeSlot.getDate().equals(date)
-                && candidateTimeSlot.getFrom().equals(start)
-                && candidateTimeSlot.getTo().equals(end))
+        .filter(slot -> (start.isAfter(slot.getFrom()) && start.isBefore(slot.getTo()))
+                || (end.isAfter(slot.getFrom()) && end.isBefore(slot.getTo()))
+                || (start.isBefore(slot.getFrom()) && end.isAfter(slot.getTo())))
         .findAny();
-
     if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());
     }
-    return true;
   }
 }
+

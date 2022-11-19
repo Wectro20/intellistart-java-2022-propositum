@@ -134,9 +134,8 @@ public class CandidateTimeSlotService {
 
     Optional<CandidateTimeSlot> overlappingSlot = slotList
         .stream()
-        .filter(slot -> (start.isAfter(slot.getFrom()) && start.isBefore(slot.getTo()))
-                || (end.isAfter(slot.getFrom()) && end.isBefore(slot.getTo()))
-                || (start.isBefore(slot.getFrom()) && end.isAfter(slot.getTo())))
+        .filter(slot -> (!(start.isAfter(slot.getTo()) || start.equals(slot.getTo())
+                || end.isBefore(slot.getFrom()) || end.equals(slot.getFrom()))))
         .findAny();
     if (overlappingSlot.isPresent()) {
       throw new SlotIsOverlappingException(overlappingSlot.get().getId());

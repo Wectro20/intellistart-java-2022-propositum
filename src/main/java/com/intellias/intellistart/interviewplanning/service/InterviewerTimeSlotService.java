@@ -187,6 +187,23 @@ public class InterviewerTimeSlotService {
       throw new SlotNotFoundException();
     }
 
+    interviewerTimeSlotRepository.findAllByUserAndWeekNum(user, interviewerTimeSlot.getWeekNum())
+        .stream()
+        .filter(slot -> !slot.getId().equals(slotId))
+        .filter(slot -> slot.getDayOfWeek().equals(dayOfWeek))
+        .filter(slot ->
+            ((slot.getFrom().minusMinutes(30L).isBefore(from)
+                && slot.getTo().isAfter(from))
+              || (slot.getFrom().isBefore(to)
+                && slot.getTo().plusMinutes(30L).isAfter(to))
+              || (slot.getFrom().equals(from) && slot.getTo().equals(to))))
+        .findAny()
+        .ifPresent(slot -> {
+          throw new SlotIsOverlappingException(slot.getId());
+        });
+
+
+
     interviewerTimeSlot.setStatus(outdatedInterviewerTimeSlot.getStatus());
     interviewerTimeSlot.setId(slotId);
     interviewerTimeSlot.setUser(user);
@@ -234,7 +251,7 @@ public class InterviewerTimeSlotService {
     if (userRole == User.UserRole.INTERVIEWER && !weekNum.equals(nextWeekNum)) {
       throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
     } else if (userRole == UserRole.COORDINATOR
-        && (!weekNum.equals(currentWeekNum) || !weekNum.equals(nextWeekNum))) {
+        && (!weekNum.equals(currentWeekNum) && !weekNum.equals(nextWeekNum))) {
       throw new WeekNumberNotAcceptableException(Collections.singletonList(nextWeekNum));
     }
   }

@@ -274,14 +274,11 @@ public class BookingService {
     LocalTime startTarget = bookingDto.getStartTime();
     LocalTime endTarget = bookingDto.getEndTime();
 
-    return ((booking.getStartTime().isBefore(startTarget)
-        || booking.getStartTime().equals(startTarget))
-        && (booking.getEndTime().isAfter(startTarget)
-        || booking.getEndTime().equals(startTarget)))
-        || ((booking.getStartTime().isBefore(endTarget)
-        || (booking.getStartTime().equals(endTarget)))
-        && (booking.getEndTime().isAfter(endTarget)
-        || booking.getEndTime().equals(endTarget)));
+    return (booking.getStartTime().minusMinutes(30L).isBefore(startTarget)
+        && booking.getEndTime().isAfter(startTarget)
+      || (booking.getStartTime().isBefore(endTarget)
+        && booking.getEndTime().plusMinutes(30L).isAfter(endTarget))
+      || (booking.getStartTime().equals(startTarget) && booking.getEndTime().equals(endTarget)));
   }
 
   /**

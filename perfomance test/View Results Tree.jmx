@@ -4,7 +4,7 @@
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="login" elementType="Argument">
@@ -24,12 +24,12 @@
           </elementProp>
           <elementProp name="getDashboard" elementType="Argument">
             <stringProp name="Argument.name">getDashboard</stringProp>
-            <stringProp name="Argument.value">weeks/47/dashboard&quot;</stringProp>
+            <stringProp name="Argument.value">weeks/48/dashboard&quot;</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="CoordinatorFbToken" elementType="Argument">
             <stringProp name="Argument.name">CoordinatorFbToken</stringProp>
-            <stringProp name="Argument.value">EAAVwMOQSGrEBANWZCZAG55u3vXyIGCrTGGEU63Kx0ZCZBbTJ0py2UIbct4YhRPzxOuvt4V154eYqVxn8AstFtllZBKtTo7JZBlKbggNoMtNU7KI7mJSua3GEIqWQFWZA2ilI9eFOLSRJanzBdoHoofXDs2S8m1dlyPbh2W9R0vMaPlYeF0wVnZAvjz3g6yTsT364ZCKvZCcVZA7qwZDZD</stringProp>
+            <stringProp name="Argument.value">EAAVwMOQSGrEBAKvuAyyCJXKBbupkH1eLS5XZAlQYch0gcYdSplNPcCNOC6W3A5q3wBu6toCqW6IIL2ZCUSmhsFTeDKVTH8ZCiGatmFr8uWseiblade4gafonCUiUS2z0wgko05AyMUuO1ycY1Ta9izXsXfCaLh2W6908iZA56A3rmd8ueuQ6wM0j2aAbRHOCtFZBHINZC7SQZDZD</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -202,11 +202,6 @@
             </collectionProp>
           </Arguments>
           <hashTree/>
-        </hashTree>
-        <CriticalSectionController guiclass="CriticalSectionControllerGui" testclass="CriticalSectionController" testname="DashBoard Section Controller" enabled="true">
-          <stringProp name="CriticalSectionController.lockName">global_lock</stringProp>
-        </CriticalSectionController>
-        <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="DashBoard" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -240,11 +235,6 @@
             </HeaderManager>
             <hashTree/>
           </hashTree>
-        </hashTree>
-        <CriticalSectionController guiclass="CriticalSectionControllerGui" testclass="CriticalSectionController" testname="Drop Booking Section Controller" enabled="true">
-          <stringProp name="CriticalSectionController.lockName">global_lock</stringProp>
-        </CriticalSectionController>
-        <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Drop Booking" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -279,6 +269,14 @@
             <hashTree/>
           </hashTree>
         </hashTree>
+        <CriticalSectionController guiclass="CriticalSectionControllerGui" testclass="CriticalSectionController" testname="DashBoard Section Controller" enabled="true">
+          <stringProp name="CriticalSectionController.lockName">global_lock</stringProp>
+        </CriticalSectionController>
+        <hashTree/>
+        <CriticalSectionController guiclass="CriticalSectionControllerGui" testclass="CriticalSectionController" testname="Drop Booking Section Controller" enabled="true">
+          <stringProp name="CriticalSectionController.lockName">global_lock</stringProp>
+        </CriticalSectionController>
+        <hashTree/>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -391,8 +389,8 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Response Latency Assertion" enabled="false">
-        <stringProp name="DurationAssertion.duration">550</stringProp>
+      <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Response Latency Assertion" enabled="true">
+        <stringProp name="DurationAssertion.duration">500</stringProp>
       </DurationAssertion>
       <hashTree/>
     </hashTree>
